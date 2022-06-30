@@ -2,12 +2,21 @@
 //
 
 #include <iostream>
+#include "raylib.h"
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    InitWindow(800, 450, "raylib [core] example - basic window");
+    SetTargetFPS(60);
+    while (!WindowShouldClose())
+    {
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+        EndDrawing();
+    }
+    CloseWindow();
+    return 0;
 }
-
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
 
