@@ -3,6 +3,9 @@
 
 #include <iostream>
 #include "raylib.h"
+#include "wren.h"
+#include "bullet/btBulletCollisionCommon.h"
+#include "asio.hpp"
 
 int main()
 {
