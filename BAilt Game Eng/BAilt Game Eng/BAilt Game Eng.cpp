@@ -2,23 +2,29 @@
 //
 
 #include <iostream>
+
+#include "ConfigLoader.h"
+
+#include "MasterGraphicsHandler.h"
+#include "ObjectHandler3D.h"
+#include "ObjectHandler2D.h"
+
 #include "raylib.h"
-#include "wren.h"
-#include "bullet/btBulletCollisionCommon.h"
-#include "asio.hpp"
+
+std::string configFilePath = "./config.txt";
+std::string windowName = "BAilt Engine";
+ConfigLoader MainConfigLoader(configFilePath);
+MasterGraphicsHandler MainMasterGraphicsHandler( &MainConfigLoader, windowName);
+
+
 
 int main()
 {
-    InitWindow(800, 450, "raylib [core] example - basic window");
-    SetTargetFPS(60);
-    while (!WindowShouldClose())
-    {
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-        EndDrawing();
-    }
-    CloseWindow();
-    return 0;
+
+	while (!WindowShouldClose())
+	{
+		MainMasterGraphicsHandler.UpdateScreen();
+	}
 }
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
