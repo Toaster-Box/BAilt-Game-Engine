@@ -23,6 +23,9 @@ int main()
 	//Prevent window from closing when ESC is pressed
 	SetExitKey(NULL);
 
+	std::string TestModel = "C:/Users/halla10/Documents/3 CODING/tempresources/BasicMonkey.obj";
+	MainObjHandler3D.CreateObject(TestModel);
+
 	//Main update loop
 	while (!WindowShouldClose())
 	{

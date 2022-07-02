@@ -1,8 +1,9 @@
 #pragma once
 
-#include<vector>
+#include <string>
+#include <vector>
 
-#include"BaseObject3D.h"
+#include "BaseObject3D.h"
 
 class ObjectHandler3D
 {
@@ -12,7 +13,7 @@ public:
 	void Render(bool isStatic);
 	void Update();
 
-	void CreateObject();
+	void CreateObject(std::string& fileName);
 	void DeleteObject();
 
 private:
@@ -52,11 +53,12 @@ void ObjectHandler3D::Update()
 	}
 }
 
-
 //Create new object from parameters and add it to container
-void ObjectHandler3D::CreateObject()
+void ObjectHandler3D::CreateObject(std::string& fileName)
 {
+	BaseObject3D* NewObj = new BaseObject3D(fileName);
 
+	m_ObjContainer3d_ptr.push_back(NewObj);
 }
 
 //Delete object from conainter and free up memory
