@@ -128,6 +128,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BAilt Game Eng.cpp" />
+    <ClCompile Include="BaseObject2D.cpp" />
+    <ClCompile Include="BaseObject3D.cpp" />
+    <ClCompile Include="ConfigLoader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BaseObject2D.h" />
+    <ClInclude Include="BaseObject3D.h" />
+    <ClInclude Include="ConfigLoader.h" />
+    <ClInclude Include="GraphicsHandler2D.h" />
+    <ClInclude Include="GraphicsHandler3D.h" />
+    <ClInclude Include="MasterGraphicsHandler.h" />
+    <ClInclude Include="ObjectHandler2D.h" />
+    <ClInclude Include="ObjectHandler3D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

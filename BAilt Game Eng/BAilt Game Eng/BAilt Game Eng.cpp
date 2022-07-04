@@ -1,32 +1,36 @@
-// BAilt Game Eng.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
 
 #include <iostream>
+
+#include "ConfigLoader.h"
+
+#include "MasterGraphicsHandler.h"
+#include "ObjectHandler3D.h"
+#include "ObjectHandler2D.h"
+
 #include "raylib.h"
-#include "wren.h"
-#include "bullet/btBulletCollisionCommon.h"
-#include "asio.hpp"
+
+std::string configFilePath = "./config.txt";
+std::string windowName = "BAilt Engine";
+
+ConfigLoader MainConfigLoader(configFilePath);
+ObjectHandler2D MainObjHandler2D;
+ObjectHandler3D MainObjHandler3D;
+MasterGraphicsHandler MainMasterGraphicsHandler( &MainConfigLoader, &MainObjHandler2D, &MainObjHandler3D, windowName);
+
 
 int main()
 {
-    InitWindow(800, 450, "raylib [core] example - basic window");
-    SetTargetFPS(60);
-    while (!WindowShouldClose())
-    {
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-        EndDrawing();
-    }
-    CloseWindow();
-    return 0;
-}
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
+	//Prevent window from closing when ESC is pressed
+	SetExitKey(NULL);
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+	std::string TestModel = "C:/Users/halla10/Documents/3 CODING/tempresources/BasicMonkey.obj";
+	MainObjHandler3D.CreateObject(TestModel);
+
+	//Main update loop
+	while (!WindowShouldClose())
+	{
+		MainMasterGraphicsHandler.UpdateScreen();
+
+		MainObjHandler3D.Update();
+	}
+}
