@@ -7,7 +7,13 @@
 #include "ObjectHandler3D.h"
 #include "ObjectHandler2D.h"
 
+#include "ScriptHandler.h"
+
 #include "raylib.h"
+
+//Temp includes
+#include "BaseObject3D.h"
+//End Temp
 
 std::string configFilePath = "./config.txt";
 std::string windowName = "BAilt Engine";
@@ -17,6 +23,8 @@ ObjectHandler2D MainObjHandler2D;
 ObjectHandler3D MainObjHandler3D;
 MasterGraphicsHandler MainMasterGraphicsHandler( &MainConfigLoader, &MainObjHandler2D, &MainObjHandler3D, windowName);
 
+ScriptHandler MainScriptHandler;
+
 
 int main()
 {
@@ -24,7 +32,11 @@ int main()
 	SetExitKey(NULL);
 
 	std::string TestModel = "C:/Users/halla10/Documents/3 CODING/tempresources/BasicMonkey.obj";
-	MainObjHandler3D.CreateObject(TestModel);
+	BaseObject3D* TempObj = MainObjHandler3D.CreateObject(TestModel);
+
+	//Temp Code
+	MainScriptHandler.RunTestCode();
+	//End Temp
 
 	//Main update loop
 	while (!WindowShouldClose())

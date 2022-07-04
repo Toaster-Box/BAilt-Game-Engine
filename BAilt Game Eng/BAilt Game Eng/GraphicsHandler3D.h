@@ -19,7 +19,7 @@ private:
 	Camera3D m_SceneCamera;
 };
 
-//Deafult constructor to initialize class
+///Default constructor to initialize class
 GraphicsHandler3D::GraphicsHandler3D(ObjectHandler3D* ObjHandler3DIn_ptr)
 {
 	m_ObjectHandler3D_ptr = ObjHandler3DIn_ptr;

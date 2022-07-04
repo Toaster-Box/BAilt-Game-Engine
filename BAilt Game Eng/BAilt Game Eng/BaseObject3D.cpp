@@ -1,6 +1,6 @@
 #include "BaseObject3D.h"
 
-//Deafult constructor to initialize class
+//Default constructor to initialize class
 BaseObject3D::BaseObject3D(std::string& fileName)
 {
 	m_postitionVec.x = 0.0f;

@@ -141,6 +141,7 @@
     <ClInclude Include="MasterGraphicsHandler.h" />
     <ClInclude Include="ObjectHandler2D.h" />
     <ClInclude Include="ObjectHandler3D.h" />
+    <ClInclude Include="ScriptHandler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
