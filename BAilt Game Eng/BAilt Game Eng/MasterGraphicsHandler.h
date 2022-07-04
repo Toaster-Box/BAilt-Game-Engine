@@ -26,7 +26,7 @@ private:
 	GraphicsHandler3D* m_GraphicsHandler3D_ptr;
 };
 
-//Deafult constructor to initialize class
+//Default constructor to initialize class
 MasterGraphicsHandler::MasterGraphicsHandler(ConfigLoader* ConfLoaderIn_ptr, ObjectHandler2D* ObjHandler2DIn_ptr, ObjectHandler3D* ObjHandler3DIn_ptr,  std::string& WindowName)
 {
 	//Allow future access to global variables set through the config files

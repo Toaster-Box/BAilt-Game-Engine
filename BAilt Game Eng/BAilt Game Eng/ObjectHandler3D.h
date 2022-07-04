@@ -13,7 +13,7 @@ public:
 	void Render(bool isStatic);
 	void Update();
 
-	void CreateObject(std::string& fileName);
+	BaseObject3D* CreateObject(std::string& fileName);
 	void DeleteObject();
 
 private:
@@ -21,7 +21,7 @@ private:
 	std::vector<BaseObject3D*> m_ObjContainer3d_ptr;
 };
 
-//Deafult constructor to initialize class
+//Default constructor to initialize class
 ObjectHandler3D::ObjectHandler3D()
 {
 
@@ -53,12 +53,14 @@ void ObjectHandler3D::Update()
 	}
 }
 
-//Create new object from parameters and add it to container
-void ObjectHandler3D::CreateObject(std::string& fileName)
+//Create new object from parameters and add it to container. Returns pointer to object
+BaseObject3D* ObjectHandler3D::CreateObject(std::string& fileName)
 {
 	BaseObject3D* NewObj = new BaseObject3D(fileName);
 
 	m_ObjContainer3d_ptr.push_back(NewObj);
+	
+	return m_ObjContainer3d_ptr.back();
 }
 
 //Delete object from conainter and free up memory
