@@ -15,11 +15,11 @@ public:
 
 	void LoadModelFromFile(std::string& fileName);
 
-	bool* GetStaticStatusPTR() { return &m_isStatic; }
-	void SetStaticStatus(bool* staticStausIn) { m_isStatic = staticStausIn; }
+	bool GetStaticStatus() { return m_isStatic; }
+	void SetStaticStatus(bool& staticStausIn) { m_isStatic = staticStausIn; }
 
-	bool* GetUpdateStatusPTR() { return &m_update; }
-	void SetUpdateStatus(bool* updateStausIn) { m_update = updateStausIn; }
+	bool GetUpdateStatus() { return m_update; }
+	void SetUpdateStatus(bool& updateStausIn) { m_update = updateStausIn; }
 
 private:
 

@@ -8,7 +8,7 @@
 class GraphicsHandler2D
 {
 public:
-	GraphicsHandler2D(ObjectHandler2D* ObjHandler2DIn_ptr);
+	GraphicsHandler2D(ObjectHandler2D& ObjHandler2DIn);
 
 	void Update();
 
@@ -18,9 +18,9 @@ private:
 };
 
 //Deafult constructor to initialize class
-GraphicsHandler2D::GraphicsHandler2D(ObjectHandler2D* ObjHandler2DIn_ptr)
+GraphicsHandler2D::GraphicsHandler2D(ObjectHandler2D& ObjHandler2DIn)
 {
-	m_ObjectHandler2D_ptr = ObjHandler2DIn_ptr;
+	m_ObjectHandler2D_ptr = &ObjHandler2DIn;
 }
 
 //Main Function which gets run every frame

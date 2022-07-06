@@ -11,17 +11,13 @@
 
 #include "raylib.h"
 
-//Temp includes
-#include "BaseObject3D.h"
-//End Temp
-
 std::string configFilePath = "./config.txt";
 std::string windowName = "BAilt Engine";
 
 ConfigLoader MainConfigLoader(configFilePath);
 ObjectHandler2D MainObjHandler2D;
 ObjectHandler3D MainObjHandler3D;
-MasterGraphicsHandler MainMasterGraphicsHandler( &MainConfigLoader, &MainObjHandler2D, &MainObjHandler3D, windowName);
+MasterGraphicsHandler MainMasterGraphicsHandler( MainConfigLoader, MainObjHandler2D, MainObjHandler3D, windowName);
 
 ScriptHandler MainScriptHandler;
 
@@ -31,12 +27,8 @@ int main()
 	//Prevent window from closing when ESC is pressed
 	SetExitKey(NULL);
 
-	std::string TestModel = "C:/Users/halla10/Documents/3 CODING/tempresources/BasicMonkey.obj";
-	BaseObject3D* TempObj = MainObjHandler3D.CreateObject(TestModel);
-
-	//Temp Code
-	MainScriptHandler.RunTestCode();
-	//End Temp
+	MainScriptHandler.SetObjHandler3DPTR(&MainObjHandler3D);
+	MainScriptHandler.RunBootScript();
 
 	//Main update loop
 	while (!WindowShouldClose())
