@@ -4,6 +4,8 @@
 #include <vector>
 
 #include "BaseObject3D.h"
+
+//I don't know why but the anonymous namspace prevents overdefinition linker errors
 namespace
 {
 	class ObjectHandler3D
