@@ -21,6 +21,9 @@ public:
 	bool GetUpdateStatus() { return m_update; }
 	void SetUpdateStatus(bool& updateStausIn) { m_update = updateStausIn; }
 
+	Vector3 GetPosition() { return m_postitionVec; }
+	void SetPosition(Vector3& PosIn) { m_postitionVec = PosIn; }
+
 private:
 
 	bool m_isStatic = true;
