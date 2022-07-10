@@ -40,6 +40,7 @@ private:
 	//Wren callback definitions
 	static WrenHandle* GetMethodHandle(WrenVM* vm, std::string& Signature);
 	static WrenLoadModuleResult LoadModule(WrenVM* vm, const char* moduleFileName);
+	static WrenForeignClassMethods BindForeignClass(WrenVM* vm, const char* moduleName, const char* className);
 	static WrenForeignMethodFn BindForeignMethod(WrenVM* vm, const char* moduleName, const char* className, bool isStatic, const char* signature);
 
 	//Function wrappers for Wren specific calls
@@ -48,16 +49,21 @@ private:
 
 	static void GetTimeStep(WrenVM* vm);
 	static void AddClassToContainer(WrenVM* vm);
+	static void AddClassInstanceToContainer(WrenVM* vm);
+
+	static void WrenMathSin(WrenVM* vm);
+	static void WrenMathCos(WrenVM* vm);
+	static void WrenMathTan(WrenVM* vm);
 
 	static void CreateObject3D(WrenVM* vm);
 	static void GetObject3DPosition(WrenVM* vm);
 	static void SetObject3DPosition(WrenVM* vm);
+	static void SetObject3DPositionFromList(WrenVM* vm);
 
-
+	
 	int m_slotCount = 0;
 
 	WrenVM* m_WrenVirtualMachine_ptr;
-
 
 	double* m_localTimeSetp_ptr;
 	ObjectHandler3D* m_LocalObjHandler3D_ptr;

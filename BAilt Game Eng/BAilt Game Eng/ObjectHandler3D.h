@@ -16,12 +16,13 @@ namespace
 		void Render(bool isStatic);
 		void Update();
 
-		BaseObject3D* CreateObject(std::string& fileName);
+		unsigned int CreateObject(std::string& fileName);
 		void DeleteObject();
 
-	private:
+		BaseObject3D* GetObjectPTR(unsigned int Index);
 
-		std::vector<BaseObject3D*> m_ObjContainer3d_ptr;
+	private:
+		std::vector<BaseObject3D*> m_ObjContainer3d;
 	};
 }
 
@@ -35,12 +36,12 @@ ObjectHandler3D::ObjectHandler3D()
 //Function to draw all objects in cointainer. Primarily for use in GraphicsHandler3D
 void ObjectHandler3D::Render(bool isStatic)
 {
-	for (unsigned int i = 0; i < m_ObjContainer3d_ptr.size(); i++)
+	for (unsigned int i = 0; i < m_ObjContainer3d.size(); i++)
 	{
 		//Only render if static/dynamic bools match
-		if (isStatic == m_ObjContainer3d_ptr[i]->GetStaticStatus())
+		if (isStatic == m_ObjContainer3d[i]->GetStaticStatus())
 		{
-			m_ObjContainer3d_ptr[i]->Render();
+			m_ObjContainer3d[i]->Render();
 		}
 	}
 }
@@ -48,28 +49,41 @@ void ObjectHandler3D::Render(bool isStatic)
 //Update funcionality of each object in container
 void ObjectHandler3D::Update()
 {
-	for (unsigned int i = 0; i < m_ObjContainer3d_ptr.size(); i++)
+	for (unsigned int i = 0; i < m_ObjContainer3d.size(); i++)
 	{
 		//Only run update function if object has it enabled
-		if ( m_ObjContainer3d_ptr[i]->GetUpdateStatus())
+		if (m_ObjContainer3d[i]->GetUpdateStatus())
 		{
-			m_ObjContainer3d_ptr[i]->Update();
+			m_ObjContainer3d[i]->Update();
 		}
 	}
 }
 
 //Create new object from parameters and add it to container. Returns pointer to object
-BaseObject3D* ObjectHandler3D::CreateObject(std::string& fileName)
+unsigned int ObjectHandler3D::CreateObject(std::string& fileName)
 {
-	BaseObject3D* NewObj = new BaseObject3D(fileName);
+	BaseObject3D* NewObj = new BaseObject3D(fileName, m_ObjContainer3d.size());
 
-	m_ObjContainer3d_ptr.push_back(NewObj);
+	m_ObjContainer3d.push_back(NewObj);
 	
-	return m_ObjContainer3d_ptr.back();
+	return m_ObjContainer3d.back()->GetIndex();
 }
 
 //Delete object from conainter and free up memory
 void ObjectHandler3D::DeleteObject()
 {
 
+}
+
+BaseObject3D* ObjectHandler3D::GetObjectPTR(unsigned int Index)
+{
+	//Prevent access violations
+	if ( Index <= m_ObjContainer3d.size())
+	{
+		return m_ObjContainer3d[Index];
+	}
+	else
+	{
+		return NULL;
+	}
 }

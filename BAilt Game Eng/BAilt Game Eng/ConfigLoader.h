@@ -35,7 +35,7 @@ private:
 	//Graphics config
 	int m_screenWidth = 1280;
 	int m_screenHeight = 720;
-	int m_targetFPS = 9999;
+	int m_targetFPS = 60;
 
 	bool m_fullScreenMode = false;
 

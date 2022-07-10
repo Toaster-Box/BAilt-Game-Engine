@@ -1,8 +1,10 @@
 #include "BaseObject3D.h"
 
 //Default constructor to initialize class
-BaseObject3D::BaseObject3D(std::string& fileName)
+BaseObject3D::BaseObject3D(std::string& fileName, unsigned int indexIn)
 {
+	m_index = indexIn;
+
 	m_postitionVec.x = 0.0f;
 	m_postitionVec.y = 0.0f;
 	m_postitionVec.z = 0.0f;
