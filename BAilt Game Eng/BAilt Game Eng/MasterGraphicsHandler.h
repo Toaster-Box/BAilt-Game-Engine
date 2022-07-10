@@ -13,7 +13,7 @@
 class MasterGraphicsHandler
 {
 public:
-	MasterGraphicsHandler(ConfigLoader* ConfLoaderIn_ptr, ObjectHandler2D* ObjHandler2DIn_ptr, ObjectHandler3D* ObjHandler3DIn_ptr, std::string& WindowName);
+	MasterGraphicsHandler(ConfigLoader& ConfLoaderIn, ObjectHandler2D& ObjHandler2DIn, ObjectHandler3D& ObjHandler3DIn, std::string& WindowName);
 
 	void UpdateScreen();
 	void ReloadConfig();
@@ -26,11 +26,11 @@ private:
 	GraphicsHandler3D* m_GraphicsHandler3D_ptr;
 };
 
-//Deafult constructor to initialize class
-MasterGraphicsHandler::MasterGraphicsHandler(ConfigLoader* ConfLoaderIn_ptr, ObjectHandler2D* ObjHandler2DIn_ptr, ObjectHandler3D* ObjHandler3DIn_ptr,  std::string& WindowName)
+//Default constructor to initialize class
+MasterGraphicsHandler::MasterGraphicsHandler(ConfigLoader& ConfLoaderIn, ObjectHandler2D& ObjHandler2DIn, ObjectHandler3D& ObjHandler3DIn,  std::string& WindowName)
 {
 	//Allow future access to global variables set through the config files
-	m_ConfigLoader_ptr = ConfLoaderIn_ptr;
+	m_ConfigLoader_ptr = &ConfLoaderIn;
 
 	//Swap window name string into a char*
 	char* windowNameArr = const_cast<char*>(WindowName.c_str());
@@ -40,8 +40,8 @@ MasterGraphicsHandler::MasterGraphicsHandler(ConfigLoader* ConfLoaderIn_ptr, Obj
 	SetTargetFPS(*m_ConfigLoader_ptr->GetConfigTargetFPS());
 
 	//Create and initialize 2D and 3D graphics handlers
-	m_GraphicsHandler2D_ptr = new GraphicsHandler2D(ObjHandler2DIn_ptr);
-	m_GraphicsHandler3D_ptr = new GraphicsHandler3D(ObjHandler3DIn_ptr);
+	m_GraphicsHandler2D_ptr = new GraphicsHandler2D(ObjHandler2DIn);
+	m_GraphicsHandler3D_ptr = new GraphicsHandler3D(ObjHandler3DIn);
 }
 
 //Main Function which gets run every frame

@@ -8,7 +8,7 @@
 class GraphicsHandler3D
 {
 public:
-	GraphicsHandler3D(ObjectHandler3D* ObjHandler3DIn_ptr);
+	GraphicsHandler3D(ObjectHandler3D& ObjHandler3DIn_ptr);
 
 	void Update();
 
@@ -19,10 +19,10 @@ private:
 	Camera3D m_SceneCamera;
 };
 
-//Deafult constructor to initialize class
-GraphicsHandler3D::GraphicsHandler3D(ObjectHandler3D* ObjHandler3DIn_ptr)
+///Default constructor to initialize class
+GraphicsHandler3D::GraphicsHandler3D(ObjectHandler3D& ObjHandler3DIn)
 {
-	m_ObjectHandler3D_ptr = ObjHandler3DIn_ptr;
+	m_ObjectHandler3D_ptr = &ObjHandler3DIn;
 
 	//Init Camera
 	m_SceneCamera.position.x = 3.0f;

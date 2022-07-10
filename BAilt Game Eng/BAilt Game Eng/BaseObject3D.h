@@ -7,7 +7,7 @@
 class BaseObject3D
 {
 public:
-	BaseObject3D(std::string& fileName);
+	BaseObject3D(std::string& fileName, unsigned int indexIn);
 
 	void Render();
 
@@ -15,13 +15,18 @@ public:
 
 	void LoadModelFromFile(std::string& fileName);
 
-	bool* GetStaticStatusPTR() { return &m_isStatic; }
-	void SetStaticStatus(bool* staticStausIn) { m_isStatic = staticStausIn; }
+	unsigned int GetIndex() { return m_index; }
+	bool GetStaticStatus() { return m_isStatic; }
+	void SetStaticStatus(bool& staticStausIn) { m_isStatic = staticStausIn; }
 
-	bool* GetUpdateStatusPTR() { return &m_update; }
-	void SetUpdateStatus(bool* updateStausIn) { m_update = updateStausIn; }
+	bool GetUpdateStatus() { return m_update; }
+	void SetUpdateStatus(bool& updateStausIn) { m_update = updateStausIn; }
+
+	Vector3 GetPosition() { return m_postitionVec; }
+	void SetPosition(Vector3& PosIn) { m_postitionVec = PosIn; }
 
 private:
+	unsigned int m_index;
 
 	bool m_isStatic = true;
 	bool m_update = true;
