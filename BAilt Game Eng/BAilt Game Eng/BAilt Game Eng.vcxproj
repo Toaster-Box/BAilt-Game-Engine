@@ -136,6 +136,7 @@
     <ClCompile Include="BaseObject3D.cpp" />
     <ClCompile Include="ConfigLoader.cpp" />
     <ClCompile Include="ScriptHandler.cpp" />
+    <ClCompile Include="Transformation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseObject2D.h" />
@@ -147,6 +148,7 @@
     <ClInclude Include="ObjectHandler2D.h" />
     <ClInclude Include="ObjectHandler3D.h" />
     <ClInclude Include="ScriptHandler.h" />
+    <ClInclude Include="Transformation.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

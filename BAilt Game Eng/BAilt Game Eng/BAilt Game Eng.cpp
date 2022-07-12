@@ -21,7 +21,7 @@ double* timeStep_ptr = new double;
 ConfigLoader MainConfigLoader(ConfigFilePath);
 ObjectHandler2D MainObjHandler2D;
 ObjectHandler3D MainObjHandler3D;
-MasterGraphicsHandler MainMasterGraphicsHandler(MainConfigLoader, MainObjHandler2D, MainObjHandler3D, WindowName);
+MasterGraphicsHandler MainMasterGraphicsHandler(&MainConfigLoader, &MainObjHandler2D, &MainObjHandler3D, WindowName);
 
 ScriptHandler MainScriptHandler;
 

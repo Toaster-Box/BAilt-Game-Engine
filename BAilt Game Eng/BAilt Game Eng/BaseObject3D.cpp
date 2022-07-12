@@ -5,15 +5,6 @@ BaseObject3D::BaseObject3D(std::string& fileName, unsigned int indexIn)
 {
 	m_index = indexIn;
 
-	m_postitionVec.x = 0.0f;
-	m_postitionVec.y = 0.0f;
-	m_postitionVec.z = 0.0f;
-
-	m_rotationQuat.x = 0.0f;
-	m_rotationQuat.y = 0.0f;
-	m_rotationQuat.z = 0.0f;
-	m_rotationQuat.w = 0.0f;
-
 	LoadModelFromFile(fileName);
 
 	Texture texture = LoadTexture("C:/Users/halla10/Documents/3 CODING/tempresources/MissingTexture.png");
@@ -24,13 +15,13 @@ BaseObject3D::BaseObject3D(std::string& fileName, unsigned int indexIn)
 //Draw object on screen
 void BaseObject3D::Render()
 {
-	DrawModel(m_objModel, m_postitionVec, 1.0f, WHITE);
+	DrawModel(m_objModel, Vector3 {0.0f}, 1.0f, WHITE);
 }
 
 //Function that contains functionality of object. Intended to be overloaded by inherited classes
 void BaseObject3D::Update()
 {
-	
+
 }
 
 

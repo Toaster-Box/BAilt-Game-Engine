@@ -2,9 +2,12 @@
 
 #include <string>
 
-#include "raylib.h"
+#include "Transformation.h"
 
-class BaseObject3D
+#include "raylib.h"
+#include "raymath.h"
+
+class BaseObject3D : Transformation
 {
 public:
 	BaseObject3D(std::string& fileName, unsigned int indexIn);
@@ -22,19 +25,17 @@ public:
 	bool GetUpdateStatus() { return m_update; }
 	void SetUpdateStatus(bool& updateStausIn) { m_update = updateStausIn; }
 
-	Vector3 GetPosition() { return m_postitionVec; }
-	void SetPosition(Vector3& PosIn) { m_postitionVec = PosIn; }
+	Vector3 GetPosition() { return m_position; }
+	void SetPosition(Vector3& PosIn) { m_position = PosIn; }
 
 private:
+
 	unsigned int m_index;
 
 	bool m_isStatic = true;
 	bool m_update = true;
 
-	Vector3 m_postitionVec;
-	Quaternion m_rotationQuat;
 	
 	Model m_objModel;
-
 };
 

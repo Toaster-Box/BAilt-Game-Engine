@@ -20,6 +20,7 @@ public:
 	int* GetConfigScreenWidth() { return &m_screenWidth; }
 	int* GetConfigScreenHeight() { return &m_screenHeight; }
 	int* GetConfigTargetFPS() { return &m_targetFPS; }
+	float* GetCameraFOV() { return &m_CameraFOV; }
 	bool* GetConfigFullScreenMode() { return &m_fullScreenMode; }
 
 	//Wren getters and setters
@@ -35,7 +36,9 @@ private:
 	//Graphics config
 	int m_screenWidth = 1280;
 	int m_screenHeight = 720;
-	int m_targetFPS = 60;
+	int m_targetFPS = 600;
+
+	float m_CameraFOV = 75.0f;
 
 	bool m_fullScreenMode = false;
 
