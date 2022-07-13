@@ -29,17 +29,72 @@ void Transformation::Roll(float& angle)
 }
 
 
-void Transformation::RotateAxisAngle(float& angle, const Vector3& axis)
+void Transformation::RotateAxisAngle(float& angle, Vector3& axis)
 {
+	Vector3 normAxis = Vector3Normalize(axis);
+	float x = normAxis.x;
+	float y = normAxis.y;
+	float z = normAxis.z;
+
+	float s = sinf(angle);
+	float c = cosf(angle);
+	float nc = 1.0f - c;
+
+	Vector3 newRight;
+	Vector3 newForward;
+	Vector3 newUp;
+
+	Matrix R1;
+
+	R1.m0 = c + (x * x * nc);		R1.m4 = (x * y * nc) - (z * s);	R1.m8 = (x * z * nc) + (y * s);		R1.m12 = 0.0f;
+	R1.m1 = (y * x * nc) + (z * s);	R1.m5 = c + (y * y * nc);		R1.m9 = (y * z * nc) - (x * s);		R1.m13 = 0.0f;
+	R1.m2 = (z * x * nc) - (y * s);	R1.m6 = (z * y * nc) + (x * s);	R1.m10 = c + (z * z * nc);			R1.m14 = 0.0f;
+	R1.m3 = 0.0f;					R1.m7 = 0.0f;					R1.m12 = 0.0f;						R1.m15 = 1.0f;
+
+	Matrix R2;
+
+	R2.m0 = m_right.x;		R2.m4 = m_right.y;		R2.m8 = m_right.z;		R2.m12 = 0.0f;
+	R2.m1 = m_forward.x;	R2.m5 = m_forward.y;	R2.m9 = m_forward.z;	R2.m13 = 0.0f;
+	R2.m2 = m_up.x;			R2.m6 = m_up.y;			R2.m10 = m_up.z;		R2.m14 = 0.0f;
+	R2.m3 = 0.0f;			R2.m7 = 0.0f;			R2.m11 = 0.0f;			R2.m15 = 1.0f;
+
+	Matrix R3 = MatrixMultiply(R1, R2);
+
+	newRight.x = R3.m0;
+	newRight.y = R3.m4;
+	newRight.z = R3.m8;
+
+	newForward.x = R3.m1;
+	newForward.y = R3.m5;
+	newForward.z = R3.m9;
+
+	newUp.x = R3.m2;
+	newUp.y = R3.m6;
+	newUp.z = R3.m10;
+
+	m_right = (newRight);
+	m_forward = (newForward);
+	m_up = (newUp);
+
+	//m_forward = Vector3Negate(m_forward);
+	//m_right = Vector3Negate(m_right);
+	//m_up = Vector3Negate(m_up);
+
+	//std::cout << "fDr: " << Vector3DotProduct(m_forward, m_right) << " fDu: " << Vector3DotProduct(m_forward, m_up) << " rDu: " << Vector3DotProduct(m_up, m_right) << std::endl;
+
+	//m_right = Vector3CrossProduct(m_up, m_forward);
+	//m_up = Vector3CrossProduct(m_forward, m_right);
+
+	
 }
 
 void Transformation::LookAt(Vector3& targetDir, Vector3& desiredUp)
 {
 	Vector3	negforward = Vector3Negate(targetDir);
-	Vector3 right = Vector3CrossProduct(desiredUp, negforward);
-	Vector3 NewUp = Vector3CrossProduct(negforward, right);
+	Vector3 right = Vector3CrossProduct(desiredUp, targetDir);
+	Vector3 NewUp = Vector3CrossProduct(targetDir, right);
 
-	m_forward = targetDir;
+	m_forward = negforward;
 	m_right = right;
 	m_up = NewUp;
 }
@@ -94,4 +149,8 @@ void Transformation::UpdateTransformation(Matrix* transformationMat_ptr)
 	Matrix TRS = MatrixMultiply(MatrixMultiply(S, R), T);
 
 	*transformationMat_ptr = TRS;
+
+	std::cout << "Forward: X: " << m_forward.x << " Y: " << m_forward.y << " Z: " << m_forward.z << std::endl;
+	std::cout << "Right: X: " << m_right.x << " Y: " << m_right.y << " Z: " << m_right.z << std::endl;
+	std::cout << "Up: X: " << m_up.x << " Y: " << m_up.y << " Z: " << m_up.z << std::endl;
 }

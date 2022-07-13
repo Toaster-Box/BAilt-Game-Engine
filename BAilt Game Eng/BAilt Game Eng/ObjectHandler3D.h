@@ -36,6 +36,16 @@ ObjectHandler3D::ObjectHandler3D()
 //Function to draw all objects in cointainer. Primarily for use in GraphicsHandler3D
 void ObjectHandler3D::Render(bool isStatic)
 {
+	//update all transforms before rendering to take advantage of processor preloading
+	for (unsigned int i = 0; i < m_ObjContainer3d.size(); i++)
+	{
+		//Update transform of about to be rendered objects
+		if (isStatic == m_ObjContainer3d[i]->GetStaticStatus())
+		{
+			m_ObjContainer3d[i]->UpdateTransform();
+		}
+	}
+
 	for (unsigned int i = 0; i < m_ObjContainer3d.size(); i++)
 	{
 		//Only render if static/dynamic bools match

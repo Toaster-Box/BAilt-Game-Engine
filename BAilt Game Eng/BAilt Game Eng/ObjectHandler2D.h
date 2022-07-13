@@ -1,5 +1,8 @@
 #pragma once
-class ObjectHandler2D
-{
-};
 
+namespace
+{
+	class ObjectHandler2D
+	{
+	};
+}

@@ -13,10 +13,75 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Graphics Headers">
+      <UniqueIdentifier>{462ba9d5-658e-4ce2-8e77-11309bbdc40b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Handler Headers">
+      <UniqueIdentifier>{b7b4b804-d9ef-4624-9cd7-7e34592f8bf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics Source">
+      <UniqueIdentifier>{14a44a14-72c0-415f-8159-119fd45e79e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Handler Source">
+      <UniqueIdentifier>{bdfa2432-f32c-43fb-b89e-10d7391e83d2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BAilt Game Eng.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BaseObject2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseObject3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Transformation.cpp">
+      <Filter>Source Files\Graphics Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptHandler.cpp">
+      <Filter>Source Files\Handler Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BaseObject2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseObject3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraWrapper3D.h">
+      <Filter>Header Files\Graphics Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="InputHandler.h">
+      <Filter>Header Files\Handler Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsHandler2D.h">
+      <Filter>Header Files\Handler Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="MasterGraphicsHandler.h">
+      <Filter>Header Files\Handler Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectHandler2D.h">
+      <Filter>Header Files\Handler Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectHandler3D.h">
+      <Filter>Header Files\Handler Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsHandler3D.h">
+      <Filter>Header Files\Handler Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptHandler.h">
+      <Filter>Header Files\Handler Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Transformation.h">
+      <Filter>Header Files\Graphics Headers</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

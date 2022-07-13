@@ -16,6 +16,8 @@ public:
 
 	virtual void Update();
 
+	void UpdateTransform() { UpdateTransformation(&m_objModel.transform); }
+
 	void LoadModelFromFile(std::string& fileName);
 
 	unsigned int GetIndex() { return m_index; }

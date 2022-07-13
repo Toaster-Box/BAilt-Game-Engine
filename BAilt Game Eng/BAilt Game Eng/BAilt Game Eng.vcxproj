@@ -141,9 +141,11 @@
   <ItemGroup>
     <ClInclude Include="BaseObject2D.h" />
     <ClInclude Include="BaseObject3D.h" />
+    <ClInclude Include="CameraWrapper3D.h" />
     <ClInclude Include="ConfigLoader.h" />
     <ClInclude Include="GraphicsHandler2D.h" />
     <ClInclude Include="GraphicsHandler3D.h" />
+    <ClInclude Include="InputHandler.h" />
     <ClInclude Include="MasterGraphicsHandler.h" />
     <ClInclude Include="ObjectHandler2D.h" />
     <ClInclude Include="ObjectHandler3D.h" />

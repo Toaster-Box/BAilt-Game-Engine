@@ -9,25 +9,30 @@
 #include "GraphicsHandler3D.h"
 
 #include "raylib.h"
-
-class MasterGraphicsHandler
+namespace
 {
-public:
-	MasterGraphicsHandler(ConfigLoader* ConfLoaderIn_ptr, ObjectHandler2D* ObjHandler2DIn_ptr, ObjectHandler3D* ObjHandler3DIn_ptr, std::string& WindowName);
+	class MasterGraphicsHandler
+	{
+	public:
+		MasterGraphicsHandler(ConfigLoader* ConfLoaderIn_ptr, ObjectHandler2D* ObjHandler2DIn_ptr, ObjectHandler3D* ObjHandler3DIn_ptr, std::string& WindowName);
 
-	void UpdateScreen();
-	void ReloadConfig();
+		GraphicsHandler2D* GetGraphicsHandler2DPTR() { return m_GraphicsHandler2D_ptr; }
+		GraphicsHandler3D* GetGraphicsHandler3DPTR() { return m_GraphicsHandler3D_ptr; }
 
-private:
+		void UpdateScreen();
+		void ReloadConfig();
 
-	ConfigLoader* m_ConfigLoader_ptr;
+	private:
 
-	GraphicsHandler2D* m_GraphicsHandler2D_ptr;
-	GraphicsHandler3D* m_GraphicsHandler3D_ptr;
-};
+		ConfigLoader* m_ConfigLoader_ptr;
+
+		GraphicsHandler2D* m_GraphicsHandler2D_ptr;
+		GraphicsHandler3D* m_GraphicsHandler3D_ptr;
+	};
+}
 
 //Default constructor to initialize class
-MasterGraphicsHandler::MasterGraphicsHandler(ConfigLoader* ConfLoaderIn_ptr, ObjectHandler2D* ObjHandler2DIn_ptr, ObjectHandler3D* ObjHandler3DIn_ptr,  std::string& WindowName)
+MasterGraphicsHandler::MasterGraphicsHandler(ConfigLoader* ConfLoaderIn_ptr, ObjectHandler2D* ObjHandler2DIn_ptr, ObjectHandler3D* ObjHandler3DIn_ptr, std::string& WindowName)
 {
 	//Allow future access to global variables set through the config files
 	m_ConfigLoader_ptr = ConfLoaderIn_ptr;

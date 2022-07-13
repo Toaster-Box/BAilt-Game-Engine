@@ -20,7 +20,7 @@ public:
 
 	void Roll(float& angle);
 
-	void RotateAxisAngle(float& angle, const Vector3& axis);
+	void RotateAxisAngle(float& angle, Vector3& axis);
 
 	void LookAt(Vector3& targetDir, Vector3& desiredUp);
 	void LookAtPos(Vector3& targetPos, Vector3& desiredUp);

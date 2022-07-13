@@ -5,17 +5,20 @@
 
 #include "raylib.h"
 
-class GraphicsHandler2D
+namespace
 {
-public:
-	GraphicsHandler2D(ObjectHandler2D& ObjHandler2DIn);
+	class GraphicsHandler2D
+	{
+	public:
+		GraphicsHandler2D(ObjectHandler2D& ObjHandler2DIn);
 
-	void Update();
+		void Update();
 
-private:
+	private:
 
-	ObjectHandler2D* m_ObjectHandler2D_ptr;
-};
+		ObjectHandler2D* m_ObjectHandler2D_ptr;
+	};
+}
 
 //Deafult constructor to initialize class
 GraphicsHandler2D::GraphicsHandler2D(ObjectHandler2D& ObjHandler2DIn)
