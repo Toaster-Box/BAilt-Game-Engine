@@ -21,27 +21,6 @@ void BaseObject3D::Render()
 //Function that contains functionality of object. Intended to be overloaded by inherited classes
 void BaseObject3D::Update()
 {
-	float angle = 0.001f;
-	std::cout << angle << std::endl;
-	Vector3 pos = {-3.0f, -3.0f, -1.0f};
-	Vector3 up = {0.0f, 0.01f, 0.99f};
-	
-	
-	//LookAtPos(pos, up);
-	//Pitch(angle);
-	
-	
-	
-	RotateAxisAngle(angle, pos);
-
-	//if (GetTime() > 2)
-	//{
-	//	Pitch(angle);
-	//}
-	//else
-	//{
-	//	Yaw(angle);
-	//}
 
 }
 

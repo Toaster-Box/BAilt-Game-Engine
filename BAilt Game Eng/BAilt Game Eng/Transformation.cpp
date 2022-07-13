@@ -76,16 +76,8 @@ void Transformation::RotateAxisAngle(float& angle, Vector3& axis)
 	m_forward = (newForward);
 	m_up = (newUp);
 
-	//m_forward = Vector3Negate(m_forward);
-	//m_right = Vector3Negate(m_right);
-	//m_up = Vector3Negate(m_up);
 
 	//std::cout << "fDr: " << Vector3DotProduct(m_forward, m_right) << " fDu: " << Vector3DotProduct(m_forward, m_up) << " rDu: " << Vector3DotProduct(m_up, m_right) << std::endl;
-
-	//m_right = Vector3CrossProduct(m_up, m_forward);
-	//m_up = Vector3CrossProduct(m_forward, m_right);
-
-	
 }
 
 void Transformation::LookAt(Vector3& targetDir, Vector3& desiredUp)
@@ -150,7 +142,7 @@ void Transformation::UpdateTransformation(Matrix* transformationMat_ptr)
 
 	*transformationMat_ptr = TRS;
 
-	std::cout << "Forward: X: " << m_forward.x << " Y: " << m_forward.y << " Z: " << m_forward.z << std::endl;
-	std::cout << "Right: X: " << m_right.x << " Y: " << m_right.y << " Z: " << m_right.z << std::endl;
-	std::cout << "Up: X: " << m_up.x << " Y: " << m_up.y << " Z: " << m_up.z << std::endl;
+	//std::cout << "Forward: X: " << m_forward.x << " Y: " << m_forward.y << " Z: " << m_forward.z << std::endl;
+	//std::cout << "Right: X: " << m_right.x << " Y: " << m_right.y << " Z: " << m_right.z << std::endl;
+	//std::cout << "Up: X: " << m_up.x << " Y: " << m_up.y << " Z: " << m_up.z << std::endl;
 }
