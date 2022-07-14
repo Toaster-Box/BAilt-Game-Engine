@@ -19,7 +19,7 @@ ScriptHandler::ScriptHandler()
 	WrenConfiguration.errorFn = &ErrorFn;
 	WrenConfiguration.loadModuleFn = &LoadModule;
 	WrenConfiguration.bindForeignMethodFn = &BindForeignMethod;
-	WrenConfiguration.bindForeignClassFn = &BindForeignClass;
+	//WrenConfiguration.bindForeignClassFn = &BindForeignClass;
 
 	m_WrenVirtualMachine_ptr = wrenNewVM(&WrenConfiguration);
 }
@@ -28,18 +28,22 @@ ScriptHandler::ScriptHandler()
 ScriptHandler::~ScriptHandler()
 {
 	//free all handles before shutting down the VM
-	for (unsigned int i = 0; i < m_MethodHandleContainer.size(); i++)
+	for (unsigned int i = m_MethodHandleContainer.size(); i > 0; i--)
 	{
-		wrenReleaseHandle(m_WrenVirtualMachine_ptr, m_MethodHandleContainer[i]);
+		wrenReleaseHandle(m_WrenVirtualMachine_ptr, m_MethodHandleContainer[i - 1]);
 	}
-	for (unsigned int i = 0; i < m_ClassHandleContainer.size(); i++)
+	for (unsigned int i = m_ClassHandleContainer.size(); i > 0; i--)
 	{
-		wrenReleaseHandle(m_WrenVirtualMachine_ptr, m_ClassHandleContainer[i]);
+		wrenReleaseHandle(m_WrenVirtualMachine_ptr, m_ClassHandleContainer[i - 1]);
 	}
-	for (unsigned int i = 0; i < m_ModuleHandleContainer.size(); i++)
+	for (unsigned int i = m_ModuleHandleContainer.size(); i > 0; i--)
 	{
-		wrenReleaseHandle(m_WrenVirtualMachine_ptr, m_ModuleHandleContainer[i]);
+		wrenReleaseHandle(m_WrenVirtualMachine_ptr, m_ModuleHandleContainer[i - 1]);
 	}
+
+	m_MethodHandleContainer.clear();
+	m_ClassHandleContainer.clear();
+	m_ModuleHandleContainer.clear();
 
 	//Shut down the VM
 	wrenFreeVM(m_WrenVirtualMachine_ptr);
@@ -49,14 +53,13 @@ ScriptHandler::~ScriptHandler()
 void ScriptHandler::RunBootScript()
 {
 	//I have absolutely no idea why but these lines keep the static pointers from returning to NULL 
-	//I think its because main needs to be entered before static variables can hold a value
 	m_timeStep_ptr = m_localTimeSetp_ptr;
-	m_InputHandler_ptr = m_localInputHandler_ptr;
 	m_MasterGraphicsHandler_ptr = m_LocalMasterGraphicsHandler_ptr;
 	m_ObjHandler3D_ptr = m_LocalObjHandler3D_ptr;
 	m_ScriptFileDirectory_ptr = m_LocalScriptFileDirectory_ptr;
 
 	//Get a Handle for the OnUpdate() function as the first handle in the method container
+	//needs to be here instead of contructor to makes sure container doesnt go back to pNULL
 	std::string UpdateSignature = "OnUpdate()";
 	GetMethodHandle(m_WrenVirtualMachine_ptr, UpdateSignature);
 
@@ -132,11 +135,11 @@ bool ScriptHandler::RunMethodNoArgs(WrenHandle* ClassHandle, WrenHandle* MethodH
 }
 
 
-WrenHandle* ScriptHandler::GetMethodHandle(WrenVM* vm, std::string& Signature)
+int ScriptHandler::GetMethodHandle(WrenVM* vm, std::string& Signature)
 {
-	WrenHandle* MethodHandle = wrenMakeCallHandle(vm, const_cast<char*>(Signature.c_str()));
-	m_MethodHandleContainer.push_back(MethodHandle);
-	return  MethodHandle;
+	WrenHandle* MethodHandle_ptr = wrenMakeCallHandle(vm, const_cast<char*>(Signature.c_str()));
+	m_MethodHandleContainer.push_back(MethodHandle_ptr);
+	return  m_MethodHandleContainer.size();
 }
 
 	
@@ -221,11 +224,7 @@ WrenForeignMethodFn ScriptHandler::BindForeignMethod(WrenVM* vm, const char* mod
 	else if (strcmp(className, "InputHandler") == 0)
 	{
 		//All InputHandler functions are nested in this Statement
-		if (isStatic && strcmp(signature, "GetInputBuffer()") == 0)
-		{
-			return GetInputBuffer;
-		}
-		else if (isStatic && strcmp(signature, "GetMouseDeltaX()") == 0)
+		if (isStatic && strcmp(signature, "GetMouseDeltaX()") == 0)
 		{
 			return GetMouseDeltaX;
 		}
@@ -245,13 +244,45 @@ WrenForeignMethodFn ScriptHandler::BindForeignMethod(WrenVM* vm, const char* mod
 		{
 			return GetMousePosY;
 		}
-		else if (isStatic && strcmp(signature, "SetLockMouse(_)") == 0)
+		else if (isStatic && strcmp(signature, "LockMouse()") == 0)
 		{
-			return SetLockMouse;
+			return LockMouse;
 		}
-		else if (isStatic && strcmp(signature, "SetShowMouse(_)") == 0)
+		else if (isStatic && strcmp(signature, "ToggleShowMouse()") == 0)
 		{
-			return SetShowMouse;
+			return ToggleShowMouse;
+		}
+		else if (isStatic && strcmp(signature, "CheckKeyPressed(_)") == 0)
+		{
+			return CheckKeyPressed;
+		}
+		else if (isStatic && strcmp(signature, "CheckKeyHeld(_)") == 0)
+		{
+			return CheckKeyHeld;
+		}
+		else if (isStatic && strcmp(signature, "CheckKeyReleased(_)") == 0)
+		{
+			return CheckKeyReleased;
+		}
+		else if (isStatic && strcmp(signature, "ReturnKeyPressed()") == 0)
+		{
+			return ReturnKeyPressed;
+		}
+		else if (isStatic && strcmp(signature, "CheckMouseButtonPressed(_)") == 0)
+		{
+			return CheckMouseButtonPressed;
+		}
+		else if (isStatic && strcmp(signature, "CheckMouseButtonHeld(_)") == 0)
+		{
+			return CheckMouseButtonHeld;
+		}
+		else if (isStatic && strcmp(signature, "CheckMouseButtonReleased(_)") == 0)
+		{
+			return CheckMouseButtonReleased;
+		}
+		else if (isStatic && strcmp(signature, "CheckMouseButtonUp(_)") == 0)
+		{
+			return CheckMouseButtonUp;
 		}
 	}
 	else if (strcmp(className, "MasterGraphicsHandler") == 0)
@@ -439,53 +470,84 @@ void ScriptHandler::WrenMathTan(WrenVM* vm)
 //InputHandler
 void ScriptHandler::GetMousePosX(WrenVM* vm)
 {
-	float posX = m_InputHandler_ptr->GetMousePosX();
-	wrenSetSlotDouble(vm, 0, posX);
+	wrenSetSlotDouble(vm, 0, GetMouseX());
 }
 void ScriptHandler::GetMousePosY(WrenVM* vm)
 {
-	float posY = m_InputHandler_ptr->GetMousePosY();
-	wrenSetSlotDouble(vm, 0, posY);
+	wrenSetSlotDouble(vm, 0, GetMouseY());
 }
 void ScriptHandler::GetMouseDeltaX(WrenVM* vm)
 {
-	wrenSetSlotDouble(vm, 0, m_InputHandler_ptr->GetMouseDeltaX());
+	wrenSetSlotDouble(vm, 0, GetMouseDelta().x);
 }
 void ScriptHandler::GetMouseDeltaY(WrenVM* vm)
 {
-	wrenSetSlotDouble(vm, 0, m_InputHandler_ptr->GetMouseDeltaY());
+	wrenSetSlotDouble(vm, 0, GetMouseDelta().y);
 }
 void ScriptHandler::GetMouseWheelDelta(WrenVM* vm)
 {
-	float wheelDelta = m_InputHandler_ptr->GetMouseWheelDelta();
-	wrenSetSlotDouble(vm, 0, wheelDelta);
+	wrenSetSlotDouble(vm, 0, GetMouseWheelMove());
 }
-void ScriptHandler::SetLockMouse(WrenVM* vm)
+void ScriptHandler::LockMouse(WrenVM* vm)
 {
-	bool isLocked = wrenGetSlotBool(vm, 1);
-	m_InputHandler_ptr->SetLockMouse(isLocked);
+	//doenst use raylib function so deltas can still be found
+	SetMousePosition(100, 100);
 }
-void ScriptHandler::SetShowMouse(WrenVM* vm)
+void ScriptHandler::ToggleShowMouse(WrenVM* vm)
 {
-	bool isShown = wrenGetSlotBool(vm, 1);
-	m_InputHandler_ptr->SetLockMouse(isShown);
-}
-void ScriptHandler::GetInputBuffer(WrenVM* vm)
-{
-	std::vector<int> localInputBuffer = *m_InputHandler_ptr->GetInputBufferPTR();
-
-	//need a fuckton of slots, indicies 0-17 most likely
-	wrenEnsureSlots(vm, localInputBuffer.size() + 1);
-
-	wrenSetSlotNewList(vm, 0);
-
-	//load all input into slots and into the list
-	for (unsigned int i = 0; i < localInputBuffer.size(); i++)
+	if (IsCursorHidden())
 	{
-		//slot index is i + 1 becasue the list is in 0
-		wrenSetSlotDouble(vm, i + 1, localInputBuffer[i]);
-		wrenInsertInList(vm, 0, i, i + 1);
+		ShowCursor();
+		SetMouseCursor(MOUSE_CURSOR_DEFAULT);
 	}
+	else
+	{
+		HideCursor();
+	}
+}
+void ScriptHandler::CheckKeyPressed(WrenVM* vm)
+{
+	int keycode = wrenGetSlotDouble(vm, 1);
+	wrenSetSlotBool(vm, 0, IsKeyPressed(keycode));
+}
+void ScriptHandler::CheckKeyHeld(WrenVM* vm)
+{
+	int keycode = wrenGetSlotDouble(vm, 1);
+	wrenSetSlotBool(vm, 0, IsKeyDown(keycode));
+}
+void ScriptHandler::CheckKeyReleased(WrenVM* vm)
+{
+	int keycode = wrenGetSlotDouble(vm, 1);
+	wrenSetSlotBool(vm, 0, IsKeyReleased(keycode));
+}
+void ScriptHandler::CheckKeyUp(WrenVM* vm)
+{
+	int keycode = wrenGetSlotDouble(vm, 1);
+	wrenSetSlotBool(vm, 0, IsKeyUp(keycode));
+}
+void ScriptHandler::ReturnKeyPressed(WrenVM* vm)
+{
+	wrenSetSlotDouble(vm, 0, GetKeyPressed());
+}
+void ScriptHandler::CheckMouseButtonPressed(WrenVM* vm)
+{
+	int keycode = wrenGetSlotDouble(vm, 1);
+	wrenSetSlotBool(vm, 0, IsMouseButtonPressed(keycode));
+}
+void ScriptHandler::CheckMouseButtonHeld(WrenVM* vm)
+{
+	int keycode = wrenGetSlotDouble(vm, 1);
+	wrenSetSlotBool(vm, 0, IsMouseButtonDown(keycode));
+}
+void ScriptHandler::CheckMouseButtonReleased(WrenVM* vm)
+{
+	int keycode = wrenGetSlotDouble(vm, 1);
+	wrenSetSlotBool(vm, 0, IsMouseButtonReleased(keycode));
+}
+void ScriptHandler::CheckMouseButtonUp(WrenVM* vm)
+{
+	int keycode = wrenGetSlotDouble(vm, 1);
+	wrenSetSlotBool(vm, 0, IsMouseButtonUp(keycode));
 }
 
 //MasterGraphicshandler

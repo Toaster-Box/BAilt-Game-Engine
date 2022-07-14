@@ -7,8 +7,6 @@
 #include "ObjectHandler3D.h"
 #include "ObjectHandler2D.h"
 
-#include "InputHandler.h"
-
 #include "ScriptHandler.h"
 
 #include "raylib.h"
@@ -26,8 +24,6 @@ ObjectHandler2D MainObjHandler2D;
 ObjectHandler3D MainObjHandler3D;
 MasterGraphicsHandler MainMasterGraphicsHandler(&MainConfigLoader, &MainObjHandler2D, &MainObjHandler3D, WindowName);
 
-InputHandler MainInptHandler;
-
 ScriptHandler MainScriptHandler;
 
 int main()
@@ -38,11 +34,8 @@ int main()
 	//Give the timestep an initial value
 	*timeStep_ptr = previousTime;
 
-	MainInptHandler.SetConfigLoaderPTR(&MainConfigLoader);
-
 	//init Script Handler, will probably all be moved to constructor sometime. for now cutting down on constructor args
 	MainScriptHandler.SetTimeStepPTR(timeStep_ptr);
-	MainScriptHandler.SetInputHandlerPTR(&MainInptHandler);
 	MainScriptHandler.SetMasterGraphicsHandlerPTR(&MainMasterGraphicsHandler);
 	MainScriptHandler.SetObjHandler3DPTR(&MainObjHandler3D);
 	MainScriptHandler.SetScriptFileDirectory(&ScriptDirectory);
@@ -54,8 +47,6 @@ int main()
 		MainMasterGraphicsHandler.UpdateScreen();
 
 		MainObjHandler3D.Update();
-
-		MainInptHandler.Update();
 
 		MainScriptHandler.Update();
 

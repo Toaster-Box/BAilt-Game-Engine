@@ -59,9 +59,6 @@
     <ClInclude Include="CameraWrapper3D.h">
       <Filter>Header Files\Graphics Headers</Filter>
     </ClInclude>
-    <ClInclude Include="InputHandler.h">
-      <Filter>Header Files\Handler Headers</Filter>
-    </ClInclude>
     <ClInclude Include="GraphicsHandler2D.h">
       <Filter>Header Files\Handler Headers</Filter>
     </ClInclude>
