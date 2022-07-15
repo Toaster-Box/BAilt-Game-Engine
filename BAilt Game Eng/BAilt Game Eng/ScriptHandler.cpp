@@ -317,29 +317,17 @@ WrenForeignMethodFn ScriptHandler::BindForeignMethod(WrenVM* vm, const char* mod
 		{
 			return GetCamera3DPosition;
 		}
-		else if (isStatic && strcmp(signature, "SetCamera3DPosition(_,_,_)") == 0)
+		else if (isStatic && strcmp(signature, "SetCamera3DPosition(_)") == 0)
 		{
 			return SetCamera3DPosition;
 		}
-		else if (isStatic && strcmp(signature, "SetCamera3DPosition(_)") == 0)
-		{
-			return SetCamera3DPositionFromList;
-		}
-		else if (isStatic && strcmp(signature, "Camera3DLookAt(_,_,_,_,_,_)") == 0)
+		else if (isStatic && strcmp(signature, "Camera3DLookAt(_,_)") == 0)
 		{
 			return Camera3DLookAt;
 		}
-		else if (isStatic && strcmp(signature, "Camera3DLookAt(_,_)") == 0)
-		{
-			return Camera3DLookAtFromList;
-		}
-		else if (isStatic && strcmp(signature, "Camera3DLookAtPos(_,_,_,_,_,_)") == 0)
-		{
-			return Camera3DLookAtPos;
-		}
 		else if (isStatic && strcmp(signature, "Camera3DLookAtPos(_,_)") == 0)
 		{
-			return Camera3DLookAtPosFromList;
+			return Camera3DLookAtPos;
 		}
 	}
 	else if (strcmp(className, "ObjectHandler3D") == 0)
@@ -361,11 +349,47 @@ WrenForeignMethodFn ScriptHandler::BindForeignMethod(WrenVM* vm, const char* mod
 		}
 		else if (isStatic && strcmp(signature, "SetObject3DPosition(_,_)") == 0)
 		{
-			return SetObject3DPositionFromList;
-		}
-		else if (isStatic && strcmp(signature, "SetObject3DPosition(_,_,_,_)") == 0)
-		{
 			return SetObject3DPosition;
+		}
+		else if (isStatic && strcmp(signature, "GetObject3DForward(_)") == 0)
+		{
+			return GetObject3DForward;
+		}
+		else if (isStatic && strcmp(signature, "GetObject3DRight(_,_)") == 0)
+		{
+			return GetObject3DRight;
+		}
+		else if (isStatic && strcmp(signature, "GetObject3DUp[(_,_)") == 0)
+		{
+			return GetObject3DUp;
+		}
+		else if (isStatic && strcmp(signature, "Object3DLookAt(_,_,_)") == 0)
+		{
+			return Object3DLookAt;
+		}
+		else if (isStatic && strcmp(signature, "Object3DLookAtPos(_,_,_)") == 0)
+		{
+			return Object3DLookAtPos;
+		}
+		else if (isStatic && strcmp(signature, "Object3DLookAtLerp(_,_,_,_)") == 0)
+		{
+			return Object3DLookAtLerp;
+		}
+		else if (isStatic && strcmp(signature, "Object3DLookAtPosLerp(_,_,_,_)") == 0)
+		{
+			return Object3DLookAtPosLerp;
+		}
+		else if (isStatic && strcmp(signature, "Object3DPitch(_,_)") == 0)
+		{
+			return Object3DPitch;
+		}
+		else if (isStatic && strcmp(signature, "Object3DYaw(_,_)") == 0)
+		{
+			return Object3DYaw;
+		}
+		else if (isStatic && strcmp(signature, "Object3DRoll(_,_)") == 0)
+		{
+			return Object3DRoll;
 		}
 	}
 	else if (strcmp(className, "ObjectHandler2D") == 0)
@@ -640,16 +664,6 @@ void ScriptHandler::GetCamera3DUp(WrenVM* vm)
 }
 void ScriptHandler::SetCamera3DPosition(WrenVM* vm)
 {
-	float xPos = wrenGetSlotDouble(vm, 1);
-	float yPos = wrenGetSlotDouble(vm, 2);
-	float zPos = wrenGetSlotDouble(vm, 3);
-
-	Vector3 posVec = { xPos, yPos, zPos };
-
-	m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetCameraWrapperPTR()->SetCameraPosition(posVec);
-}
-void ScriptHandler::SetCamera3DPositionFromList(WrenVM* vm)
-{
 	//need slots 0-4
 	wrenEnsureSlots(vm, 5);
 
@@ -665,24 +679,6 @@ void ScriptHandler::SetCamera3DPositionFromList(WrenVM* vm)
 	m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetCameraWrapperPTR()->SetCameraPosition(posVec);
 }
 void ScriptHandler::Camera3DLookAt(WrenVM* vm)
-{
-	//need slots 0-4
-	wrenEnsureSlots(vm, 7);
-
-	float xTarget = wrenGetSlotDouble(vm, 1);
-	float yTarget = wrenGetSlotDouble(vm, 2);
-	float zTarget = wrenGetSlotDouble(vm, 3);
-
-	float xUp = wrenGetSlotDouble(vm, 4);
-	float yUp = wrenGetSlotDouble(vm, 5);
-	float zUp = wrenGetSlotDouble(vm, 6);
-
-	Vector3 targetVec = { xTarget, yTarget, zTarget };
-	Vector3 upVec = { xUp, yUp, zUp };
-
-	m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetCameraWrapperPTR()->LookAt(targetVec, upVec);
-}
-void ScriptHandler::Camera3DLookAtFromList(WrenVM* vm)
 {
 	//need slots 0-8
 	wrenEnsureSlots(vm, 9);
@@ -709,24 +705,6 @@ void ScriptHandler::Camera3DLookAtFromList(WrenVM* vm)
 	m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetCameraWrapperPTR()->LookAt(targetVec, upVec);
 }
 void ScriptHandler::Camera3DLookAtPos(WrenVM* vm)
-{
-	//need slots 0-4
-	wrenEnsureSlots(vm, 7);
-
-	float xTarget = wrenGetSlotDouble(vm, 1);
-	float yTarget = wrenGetSlotDouble(vm, 2);
-	float zTarget = wrenGetSlotDouble(vm, 3);
-
-	float xUp = wrenGetSlotDouble(vm, 4);
-	float yUp = wrenGetSlotDouble(vm, 5);
-	float zUp = wrenGetSlotDouble(vm, 6);
-
-	Vector3 targetVec = { xTarget, yTarget, zTarget };
-	Vector3 upVec = { xUp, yUp, zUp };
-
-	m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetCameraWrapperPTR()->LookAtPos(targetVec, upVec);
-}
-void ScriptHandler::Camera3DLookAtPosFromList(WrenVM* vm)
 {
 	//need slots 0-8
 	wrenEnsureSlots(vm, 9);
@@ -804,30 +782,6 @@ void ScriptHandler::GetObject3DPosition(WrenVM* vm)
 }
 void ScriptHandler::SetObject3DPosition(WrenVM* vm)
 {
-	//this used to have a string to void*...
-
-	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
-	
-	Vector3 PosVector;
-	PosVector.x = wrenGetSlotDouble(vm, 2);
-	PosVector.y = wrenGetSlotDouble(vm, 3);
-	PosVector.z = wrenGetSlotDouble(vm, 4);
-
-	BaseObject3D* obj_ptr = NULL;
-	obj_ptr = m_ObjHandler3D_ptr->GetObjectPTR(objIndex);
-
-	//prevent trying to access a null pointer
-	if (obj_ptr != NULL)
-	{
-		obj_ptr->SetPosition(PosVector);
-	}
-	else
-	{
-		std::cout << "Error setting object position" << std::endl;
-	}
-}
-void ScriptHandler::SetObject3DPositionFromList(WrenVM* vm)
-{
 	//need slots 0-5
 	wrenEnsureSlots(vm, 6);
 
@@ -853,5 +807,335 @@ void ScriptHandler::SetObject3DPositionFromList(WrenVM* vm)
 	else
 	{
 		std::cout << "Error setting object position" << std::endl;
+	}
+}
+void ScriptHandler::GetObject3DForward(WrenVM* vm)
+{
+	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
+
+	BaseObject3D* obj_ptr = NULL;
+	obj_ptr = m_ObjHandler3D_ptr->GetObjectPTR(objIndex);
+
+	Vector3 forward;
+
+	//prevent trying to access a null pointer
+	if (obj_ptr != NULL)
+	{
+		forward = obj_ptr->GetForward();
+	}
+	else
+	{
+		std::cout << "Error getting object forward" << std::endl;
+
+		forward.x = 0;
+		forward.y = 0;
+		forward.z = 0;
+	}
+
+	//Ensure slots since we are using a lot of them, 5 for indicies 0-4
+	wrenEnsureSlots(vm, 5);
+
+	//return vecot as a list in slot 0
+	wrenSetSlotNewList(vm, 0);
+
+	wrenSetSlotDouble(vm, 2, 0.0f - forward.x);
+	wrenSetSlotDouble(vm, 3, forward.y);
+	wrenSetSlotDouble(vm, 4, forward.z);
+
+	wrenInsertInList(vm, 0, 0, 2);
+	wrenInsertInList(vm, 0, 1, 3);
+	wrenInsertInList(vm, 0, 2, 4);
+}
+void ScriptHandler::GetObject3DRight(WrenVM* vm)
+{
+	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
+
+	BaseObject3D* obj_ptr = NULL;
+	obj_ptr = m_ObjHandler3D_ptr->GetObjectPTR(objIndex);
+
+	Vector3 right;
+
+	//prevent trying to access a null pointer
+	if (obj_ptr != NULL)
+	{
+		right = obj_ptr->GetRight();
+	}
+	else
+	{
+		std::cout << "Error getting object right" << std::endl;
+
+		right.x = 0;
+		right.y = 0;
+		right.z = 0;
+	}
+
+	//Ensure slots since we are using a lot of them, 5 for indicies 0-4
+	wrenEnsureSlots(vm, 5);
+
+	//return vecot as a list in slot 0
+	wrenSetSlotNewList(vm, 0);
+
+	wrenSetSlotDouble(vm, 2, 0.0f - right.x);
+	wrenSetSlotDouble(vm, 3, right.y);
+	wrenSetSlotDouble(vm, 4, right.z);
+
+	wrenInsertInList(vm, 0, 0, 2);
+	wrenInsertInList(vm, 0, 1, 3);
+	wrenInsertInList(vm, 0, 2, 4);
+}
+void ScriptHandler::GetObject3DUp(WrenVM* vm)
+{
+	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
+
+	BaseObject3D* obj_ptr = NULL;
+	obj_ptr = m_ObjHandler3D_ptr->GetObjectPTR(objIndex);
+
+	Vector3 up;
+
+	//prevent trying to access a null pointer
+	if (obj_ptr != NULL)
+	{
+		up = obj_ptr->GetUp();
+	}
+	else
+	{
+		std::cout << "Error getting object up" << std::endl;
+
+		up.x = 0;
+		up.y = 0;
+		up.z = 0;
+	}
+
+	//Ensure slots since we are using a lot of them, 5 for indicies 0-4
+	wrenEnsureSlots(vm, 5);
+
+	//return vecot as a list in slot 0
+	wrenSetSlotNewList(vm, 0);
+
+	wrenSetSlotDouble(vm, 2, 0.0f - up.x);
+	wrenSetSlotDouble(vm, 3, up.y);
+	wrenSetSlotDouble(vm, 4, up.z);
+
+	wrenInsertInList(vm, 0, 0, 2);
+	wrenInsertInList(vm, 0, 1, 3);
+	wrenInsertInList(vm, 0, 2, 4);
+}
+void ScriptHandler::Object3DLookAt(WrenVM* vm)
+{
+	//need slots 0-5
+	wrenEnsureSlots(vm, 10);
+
+	wrenGetListElement(vm, 2, 0, 4);
+	wrenGetListElement(vm, 2, 1, 5);
+	wrenGetListElement(vm, 2, 2, 6);
+
+	wrenGetListElement(vm, 3, 0, 7);
+	wrenGetListElement(vm, 3, 1, 8);
+	wrenGetListElement(vm, 3, 2, 9);
+
+	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
+
+	Vector3 targetVec;
+	targetVec.x = wrenGetSlotDouble(vm, 4);
+	targetVec.y = wrenGetSlotDouble(vm, 5);
+	targetVec.z = wrenGetSlotDouble(vm, 6);
+
+	Vector3 upVec;
+	upVec.x = wrenGetSlotDouble(vm, 7);
+	upVec.y = wrenGetSlotDouble(vm, 8);
+	upVec.z = wrenGetSlotDouble(vm, 9);
+
+	BaseObject3D* obj_ptr = NULL;
+	obj_ptr = m_ObjHandler3D_ptr->GetObjectPTR(objIndex);
+
+	//prevent trying to access a null pointer
+	if (obj_ptr != NULL)
+	{
+		obj_ptr->LookAt(targetVec, upVec);
+	}
+	else
+	{
+		std::cout << "Error pointing object in direction" << std::endl;
+	}
+}
+void ScriptHandler::Object3DLookAtPos(WrenVM* vm)
+{
+	//need slots 0-9
+	wrenEnsureSlots(vm, 10);
+
+	wrenGetListElement(vm, 2, 0, 4);
+	wrenGetListElement(vm, 2, 1, 5);
+	wrenGetListElement(vm, 2, 2, 6);
+
+	wrenGetListElement(vm, 3, 0, 7);
+	wrenGetListElement(vm, 3, 1, 8);
+	wrenGetListElement(vm, 3, 2, 9);
+
+	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
+
+	Vector3 posVec;
+	posVec.x = wrenGetSlotDouble(vm, 4);
+	posVec.y = wrenGetSlotDouble(vm, 5);
+	posVec.z = wrenGetSlotDouble(vm, 6);
+
+	Vector3 upVec;
+	upVec.x = wrenGetSlotDouble(vm, 7);
+	upVec.y = wrenGetSlotDouble(vm, 8);
+	upVec.z = wrenGetSlotDouble(vm, 9);
+
+	BaseObject3D* obj_ptr = NULL;
+	obj_ptr = m_ObjHandler3D_ptr->GetObjectPTR(objIndex);
+
+	//prevent trying to access a null pointer
+	if (obj_ptr != NULL)
+	{
+		obj_ptr->LookAtPos(posVec, upVec);
+	}
+	else
+	{
+		std::cout << "Error pointing object at position" << std::endl;
+	}
+}
+void ScriptHandler::Object3DLookAtLerp(WrenVM* vm)
+{
+	//need slots 0-10
+	wrenEnsureSlots(vm, 11);
+
+	float deltaPercent = wrenGetSlotDouble(vm, 4);
+
+	wrenGetListElement(vm, 2, 0, 5);
+	wrenGetListElement(vm, 2, 1, 6);
+	wrenGetListElement(vm, 2, 2, 7);
+
+	wrenGetListElement(vm, 3, 0, 8);
+	wrenGetListElement(vm, 3, 1, 9);
+	wrenGetListElement(vm, 3, 2, 10);
+
+	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
+
+	Vector3 targetVec;
+	targetVec.x = wrenGetSlotDouble(vm, 5);
+	targetVec.y = wrenGetSlotDouble(vm, 6);
+	targetVec.z = wrenGetSlotDouble(vm, 7);
+
+	Vector3 upVec;
+	upVec.x = wrenGetSlotDouble(vm, 8);
+	upVec.y = wrenGetSlotDouble(vm, 9);
+	upVec.z = wrenGetSlotDouble(vm, 10);
+
+	BaseObject3D* obj_ptr = NULL;
+	obj_ptr = m_ObjHandler3D_ptr->GetObjectPTR(objIndex);
+
+	//prevent trying to access a null pointer
+	if (obj_ptr != NULL)
+	{
+		obj_ptr->LookAtLerp(targetVec, upVec, deltaPercent);
+	}
+	else
+	{
+		std::cout << "Error lerping object toward target" << std::endl;
+	}
+}
+void ScriptHandler::Object3DLookAtPosLerp(WrenVM* vm)
+{
+	//need slots 0-10
+	wrenEnsureSlots(vm, 11);
+
+	float deltaPercent = wrenGetSlotDouble(vm, 4);
+
+	wrenGetListElement(vm, 2, 0, 5);
+	wrenGetListElement(vm, 2, 1, 6);
+	wrenGetListElement(vm, 2, 2, 7);
+
+	wrenGetListElement(vm, 3, 0, 8);
+	wrenGetListElement(vm, 3, 1, 9);
+	wrenGetListElement(vm, 3, 2, 10);
+
+	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
+
+	Vector3 posVec;
+	posVec.x = wrenGetSlotDouble(vm, 5);
+	posVec.y = wrenGetSlotDouble(vm, 6);
+	posVec.z = wrenGetSlotDouble(vm, 7);
+
+	Vector3 upVec;
+	upVec.x = wrenGetSlotDouble(vm, 8);
+	upVec.y = wrenGetSlotDouble(vm, 9);
+	upVec.z = wrenGetSlotDouble(vm, 10);
+
+	BaseObject3D* obj_ptr = NULL;
+	obj_ptr = m_ObjHandler3D_ptr->GetObjectPTR(objIndex);
+
+	//prevent trying to access a null pointer
+	if (obj_ptr != NULL)
+	{
+		obj_ptr->LookAtPosLerp(posVec, upVec, deltaPercent);
+	}
+	else
+	{
+		std::cout << "Error lerping object toward target point" << std::endl;
+	}
+}
+void ScriptHandler::Object3DPitch(WrenVM* vm)
+{
+	//0-2
+	wrenEnsureSlots(vm, 3);
+
+	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
+	BaseObject3D* obj_ptr = NULL;
+	obj_ptr = m_ObjHandler3D_ptr->GetObjectPTR(objIndex);
+
+	float angle = wrenGetSlotDouble(vm, 2);
+
+	//prevent trying to access a null pointer
+	if (obj_ptr != NULL)
+	{
+		obj_ptr->Pitch(angle);
+	}
+	else
+	{
+		std::cout << "Error pitching object" << std::endl;
+	}
+}
+void ScriptHandler::Object3DYaw(WrenVM* vm)
+{
+	//0-2
+	wrenEnsureSlots(vm, 3);
+
+	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
+	BaseObject3D* obj_ptr = NULL;
+	obj_ptr = m_ObjHandler3D_ptr->GetObjectPTR(objIndex);
+
+	float angle = wrenGetSlotDouble(vm, 2);
+
+	//prevent trying to access a null pointer
+	if (obj_ptr != NULL)
+	{
+		obj_ptr->Yaw(angle);
+	}
+	else
+	{
+		std::cout << "Error yawing object" << std::endl;
+	}
+}
+void ScriptHandler::Object3DRoll(WrenVM* vm)
+{
+	//0-2
+	wrenEnsureSlots(vm, 3);
+
+	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
+	BaseObject3D* obj_ptr = NULL;
+	obj_ptr = m_ObjHandler3D_ptr->GetObjectPTR(objIndex);
+
+	float angle = wrenGetSlotDouble(vm, 2);
+
+	//prevent trying to access a null pointer
+	if (obj_ptr != NULL)
+	{
+		obj_ptr->Roll(angle);
+	}
+	else
+	{
+		std::cout << "Error rolling object" << std::endl;
 	}
 }

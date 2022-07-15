@@ -31,64 +31,46 @@ void Transformation::Roll(float& angle)
 
 void Transformation::RotateAxisAngle(float& angle, Vector3& axis)
 {
-	Vector3 normAxis = Vector3Normalize(axis);
-	float x = normAxis.x;
-	float y = normAxis.y;
-	float z = normAxis.z;
+	axis = Vector3Normalize(axis);
+	Quaternion tempQuat = QuaternionFromAxisAngle(axis, angle);
 
-	float s = sinf(angle);
-	float c = cosf(angle);
-	float nc = 1.0f - c;
+	m_right = Vector3RotateByQuaternion(m_right, tempQuat);
+	m_forward = Vector3RotateByQuaternion(m_forward, tempQuat);
+	m_up = Vector3RotateByQuaternion(m_up, tempQuat);
 
-	Vector3 newRight;
-	Vector3 newForward;
-	Vector3 newUp;
+	Quaternion newOrientation = QuaternionMultiply(tempQuat, m_orientation);
 
-	Matrix R1;
+	m_orientation = newOrientation;
 
-	R1.m0 = c + (x * x * nc);		R1.m4 = (x * y * nc) - (z * s);	R1.m8 = (x * z * nc) + (y * s);		R1.m12 = 0.0f;
-	R1.m1 = (y * x * nc) + (z * s);	R1.m5 = c + (y * y * nc);		R1.m9 = (y * z * nc) - (x * s);		R1.m13 = 0.0f;
-	R1.m2 = (z * x * nc) - (y * s);	R1.m6 = (z * y * nc) + (x * s);	R1.m10 = c + (z * z * nc);			R1.m14 = 0.0f;
-	R1.m3 = 0.0f;					R1.m7 = 0.0f;					R1.m12 = 0.0f;						R1.m15 = 1.0f;
-
-	Matrix R2;
-
-	R2.m0 = m_right.x;		R2.m4 = m_right.y;		R2.m8 = m_right.z;		R2.m12 = 0.0f;
-	R2.m1 = m_forward.x;	R2.m5 = m_forward.y;	R2.m9 = m_forward.z;	R2.m13 = 0.0f;
-	R2.m2 = m_up.x;			R2.m6 = m_up.y;			R2.m10 = m_up.z;		R2.m14 = 0.0f;
-	R2.m3 = 0.0f;			R2.m7 = 0.0f;			R2.m11 = 0.0f;			R2.m15 = 1.0f;
-
-	Matrix R3 = MatrixMultiply(R1, R2);
-
-	newRight.x = R3.m0;
-	newRight.y = R3.m4;
-	newRight.z = R3.m8;
-
-	newForward.x = R3.m1;
-	newForward.y = R3.m5;
-	newForward.z = R3.m9;
-
-	newUp.x = R3.m2;
-	newUp.y = R3.m6;
-	newUp.z = R3.m10;
-
-	m_right = (newRight);
-	m_forward = (newForward);
-	m_up = (newUp);
-
-
-	//std::cout << "fDr: " << Vector3DotProduct(m_forward, m_right) << " fDu: " << Vector3DotProduct(m_forward, m_up) << " rDu: " << Vector3DotProduct(m_up, m_right) << std::endl;
+	//std::cout << "Forward: " << m_forward.x << " " << m_forward.y << " " << m_forward.z << std::endl;
 }
 
 void Transformation::LookAt(Vector3& targetDir, Vector3& desiredUp)
 {
-	Vector3	negforward = Vector3Negate(targetDir);
-	Vector3 right = Vector3CrossProduct(desiredUp, targetDir);
-	Vector3 NewUp = Vector3CrossProduct(targetDir, right);
+	targetDir = Vector3Normalize(Vector3Negate(targetDir));
+	desiredUp = Vector3Normalize(desiredUp);
 
-	m_forward = negforward;
-	m_right = right;
-	m_up = NewUp;
+	targetDir.x = -targetDir.x;
+	desiredUp.x = -desiredUp.x;
+
+	Vector3 worldForward = { 0.0f, 1.0f, 0.0f };
+	Vector3 worldUp = { 0.0f, 0.0f, 1.0f };
+	Vector3 worldRight = { 1.0f, 0.0f, 1.0f }; 
+	Quaternion rotQuat1 = QuaternionFromVector3ToVector3(worldForward, targetDir);
+
+	m_right = Vector3CrossProduct(targetDir, desiredUp);
+	desiredUp = Vector3CrossProduct(m_right, targetDir);
+
+	Vector3 newUp = Vector3RotateByQuaternion(worldUp, rotQuat1);
+	Quaternion rotQuat2 = QuaternionFromVector3ToVector3(newUp, desiredUp);
+
+	m_orientation = QuaternionMultiply(rotQuat2, rotQuat1);
+
+	m_orientation = QuaternionNormalize(m_orientation);
+
+	m_forward = Vector3RotateByQuaternion(worldForward, m_orientation);
+	m_up = Vector3RotateByQuaternion(worldUp, m_orientation);
+	m_right = Vector3RotateByQuaternion(worldRight, m_orientation);
 }
 
 
@@ -111,38 +93,54 @@ void Transformation::LookAtPos(Vector3& targetPos, Vector3& desiredUp)
 }
 
 
+void Transformation::LookAtLerp(Vector3& targetDir, Vector3& desiredUp, float deltaPercent)
+{
+	Quaternion initialOrientation = m_orientation;
+
+	LookAt(targetDir, desiredUp);
+
+	Quaternion targetorientation = m_orientation;
+
+	Quaternion lerpedTarget;
+	lerpedTarget.x = ((targetorientation.x - initialOrientation.x) * deltaPercent) + initialOrientation.x;
+	lerpedTarget.y = ((targetorientation.y - initialOrientation.y) * deltaPercent) + initialOrientation.y;
+	lerpedTarget.z = ((targetorientation.z - initialOrientation.z) * deltaPercent) + initialOrientation.z;
+	lerpedTarget.w = ((targetorientation.w - initialOrientation.w) * deltaPercent) + initialOrientation.w;
+
+	m_orientation = QuaternionNormalize(lerpedTarget);
+}
+
+
+void Transformation::LookAtPosLerp(Vector3& targetPos, Vector3& desiredUp, float deltaPercent)
+{
+	Quaternion initialOrientation = m_orientation;
+
+	LookAtPos(targetPos, desiredUp);
+
+	Quaternion targetorientation = m_orientation;
+
+	Quaternion lerpedTarget;
+	lerpedTarget.x = ((targetorientation.x - initialOrientation.x) * deltaPercent) + initialOrientation.x;
+	lerpedTarget.y = ((targetorientation.y - initialOrientation.y) * deltaPercent) + initialOrientation.y;
+	lerpedTarget.z = ((targetorientation.z - initialOrientation.z) * deltaPercent) + initialOrientation.z;
+	lerpedTarget.w = ((targetorientation.w - initialOrientation.w) * deltaPercent) + initialOrientation.w;
+
+	m_orientation = QuaternionNormalize(lerpedTarget);
+}
+
+
 void Transformation::UpdateTransformation(Matrix* transformationMat_ptr) 
 {
-	Matrix R;
-
-	m_forward = Vector3Normalize(m_forward);
 	m_right = Vector3Normalize(m_right);
+	m_forward = Vector3Normalize(m_forward);
 	m_up = Vector3Normalize(m_up);
 
-	R.m0 = m_right.x;	R.m4 = m_right.y;	R.m8 = m_right.z;	R.m12 = 0.0f;
-	R.m1 = m_forward.x;	R.m5 = m_forward.y;	R.m9 = m_forward.z;	R.m13 = 0.0f;
-	R.m2 = m_up.x;		R.m6 = m_up.y;		R.m10 = m_up.z;		R.m14 = 0.0f;
-	R.m3 = 0.0f;		R.m7 = 0.0f;		R.m11 = 0.0f;		R.m15 = 1.0f;
 
-	Matrix T;
+	Matrix R = QuaternionToMatrix(m_orientation);
+	Matrix T = MatrixTranslate(-m_position.x, m_position.y, m_position.z);
+	Matrix S = MatrixScale(m_scale.x, m_scale.y, m_scale.z);
 
-	T.m0 = 1.0f;					T.m4 = 0.0f;					T.m8 = 0.0f;					T.m12 = -m_position.x;
-	T.m1 = 0.0f;					T.m5 = 1.0f;					T.m9 = 0.0f;					T.m13 = m_position.y;
-	T.m2 = 0.0f;					T.m6 = 0.0f;					T.m10 = 1.0f;					T.m14 = m_position.z;
-	T.m3 = 0.0f;					T.m7 = 0.0f;					T.m11 = 0.0f;					T.m15 = 1.0f;
-
-	Matrix S;
-
-	S.m0 = 1.0f / m_scale.x;	S.m4 = 0.0f;				S.m8 = 0.0f;				S.m12 = 0.0f;
-	S.m1 = 0.0f;				S.m5 = 1.0f / m_scale.y;	S.m9 = 0.0f;				S.m13 = 0.0f;
-	S.m2 = 0.0f;				S.m6 = 0.0f;				S.m10 = 1.0f / m_scale.z;	S.m14 = 0.0f;
-	S.m3 = 0.0f;				S.m7 = 0.0f;				S.m11 = 0.0f;				S.m15 = 1.0f;
-
-	Matrix TRS = MatrixMultiply(MatrixMultiply(S, R), T);
+	Matrix TRS = MatrixMultiply(MatrixMultiply(R, T), S);
 
 	*transformationMat_ptr = TRS;
-
-	//std::cout << "Forward: X: " << m_forward.x << " Y: " << m_forward.y << " Z: " << m_forward.z << std::endl;
-	//std::cout << "Right: X: " << m_right.x << " Y: " << m_right.y << " Z: " << m_right.z << std::endl;
-	//std::cout << "Up: X: " << m_up.x << " Y: " << m_up.y << " Z: " << m_up.z << std::endl;
 }

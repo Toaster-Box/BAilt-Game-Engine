@@ -7,7 +7,7 @@
 #include "raylib.h"
 #include "raymath.h"
 
-class BaseObject3D : Transformation
+class BaseObject3D : public Transformation
 {
 public:
 	BaseObject3D(std::string& fileName, unsigned int indexIn);
@@ -26,9 +26,6 @@ public:
 
 	bool GetUpdateStatus() { return m_update; }
 	void SetUpdateStatus(bool& updateStausIn) { m_update = updateStausIn; }
-
-	Vector3 GetPosition() { return m_position; }
-	void SetPosition(Vector3& PosIn) { m_position = PosIn; }
 
 private:
 

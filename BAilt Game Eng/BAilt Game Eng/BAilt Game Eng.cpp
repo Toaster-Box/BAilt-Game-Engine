@@ -44,11 +44,12 @@ int main()
 	//Main update loop
 	while (!WindowShouldClose())
 	{
-		MainMasterGraphicsHandler.UpdateScreen();
+		//Update scripts then objects then screen
+		MainScriptHandler.Update();
 
 		MainObjHandler3D.Update();
 
-		MainScriptHandler.Update();
+		MainMasterGraphicsHandler.UpdateScreen();
 
 		//Update time step
 		*timeStep_ptr = GetTime() - previousTime;

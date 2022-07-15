@@ -18,7 +18,7 @@ namespace
 
 		Vector3	GetCameraPosition() { return m_rayCamera.position; }
 		Vector3	GetCameraForward() { return m_forward; }
-		Vector3	GetCameraRight() { return m_right; }
+		Vector3	GetCameraRight() { return Vector3Negate(m_left); }
 		Vector3	GetCameraUp() { return m_rayCamera.up; }
 		void SetCameraPosition(Vector3& posIn); 
 
@@ -32,7 +32,7 @@ namespace
 
 		void RotateAxisAngle(float& angle, const Vector3& axis);
 
-		Vector3 m_right;
+		Vector3 m_left;
 		Vector3 m_forward;
 
 		Camera3D m_rayCamera;
@@ -51,7 +51,7 @@ CameraWrapper3D::CameraWrapper3D()
 
 	m_rayCamera.target = forward;
 	m_rayCamera.up = up;
-	m_right = right;
+	m_left = right;
 }
 
 
@@ -99,7 +99,7 @@ void CameraWrapper3D::SetCameraPosition(Vector3& posIn)
 
 void CameraWrapper3D::Pitch(float& angle)
 {
-	RotateAxisAngle(angle, m_right);
+	RotateAxisAngle(angle, m_left);
 }
 
 
@@ -128,7 +128,7 @@ void CameraWrapper3D::RotateAxisAngle(float& angle, const Vector3& axis)
 	float c = cosf(angle);
 	float nc = 1.0f - c;
 
-	Vector3 newRight;
+	Vector3 newLeft;
 	Vector3 newForward;
 	Vector3 newUp;
 
@@ -141,16 +141,16 @@ void CameraWrapper3D::RotateAxisAngle(float& angle, const Vector3& axis)
 
 	Matrix R2;
 
-	R2.m0 = m_right.x;		R2.m4 = m_right.y;		R2.m8 = m_right.z;		R2.m12 = 0.0f;
+	R2.m0 = m_left.x;		R2.m4 = m_left.y;		R2.m8 = m_left.z;		R2.m12 = 0.0f;
 	R2.m1 = m_forward.x;	R2.m5 = m_forward.y;	R2.m9 = m_forward.z;	R2.m13 = 0.0f;
 	R2.m2 = upT.x;			R2.m6 = upT.y;			R2.m10 = upT.z;			R2.m14 = 0.0f;
 	R2.m3 = 0.0f;			R2.m7 = 0.0f;			R2.m11 = 0.0f;			R2.m15 = 1.0f;
 
 	Matrix R3 = MatrixMultiply(R1, R2);
 
-	newRight.x = R3.m0;
-	newRight.y = R3.m4;
-	newRight.z = R3.m8;
+	newLeft.x = R3.m0;
+	newLeft.y = R3.m4;
+	newLeft.z = R3.m8;
 
 	newForward.x = R3.m1;
 	newForward.y = R3.m5;
@@ -160,10 +160,60 @@ void CameraWrapper3D::RotateAxisAngle(float& angle, const Vector3& axis)
 	newUp.y = R3.m6;
 	newUp.z = R3.m10;
 	
-	m_right = newRight;
+	m_left = newLeft;
 	m_rayCamera.target = Vector3Add(newForward, m_rayCamera.position);
 	m_rayCamera.up = newUp;
 
 	//for forward preservation.
 	m_forward = newForward;
 }
+
+//saving for later
+
+//void Transformation::LookAtLerp(Vector3& targetDir, Vector3& desiredUp, float deltaPercent)
+//{
+//	Vector3 normTargetDr;
+//	normTargetDr = Vector3Normalize(targetDir);
+//	//normTargetDr.x = -normTargetDr.x;
+//
+//	Vector3 normDesiredUp;
+//
+//	Vector3 reversedForward;
+//	reversedForward = Vector3Negate(m_forward);
+//
+//	Vector3 lerpedTarget;
+//	lerpedTarget.x = ((normTargetDr.x - reversedForward.x) * deltaPercent) + reversedForward.x;
+//	lerpedTarget.y = ((normTargetDr.y - reversedForward.y) * deltaPercent) + reversedForward.y;
+//	lerpedTarget.z = ((normTargetDr.z - reversedForward.z) * deltaPercent) + reversedForward.z;
+//
+//	std::cout << "Forward: " << m_forward.x << " " << m_forward.y << " " << m_forward.z << std::endl;
+//	std::cout << "target: " << normTargetDr.x << " " << normTargetDr.y << " " << normTargetDr.z << std::endl;
+//
+//	LookAt(lerpedTarget, desiredUp);
+//}
+//
+//
+//void Transformation::LookAtPosLerp(Vector3& targetPos, Vector3& desiredUp, float deltaPercent)
+//{
+//	Vector3 moddedTarget;
+//	moddedTarget.x = targetPos.x - m_position.x;
+//	moddedTarget.y = targetPos.y - m_position.y;
+//	moddedTarget.z = targetPos.z - m_position.z;
+//
+//	moddedTarget = Vector3Normalize(moddedTarget);
+//
+//	Vector3 reversedForward;
+//	reversedForward = Vector3Negate(m_forward);
+//
+//	Vector3 lerpedTarget;
+//	lerpedTarget.x = ((moddedTarget.x - reversedForward.x) * deltaPercent) + reversedForward.x;
+//	lerpedTarget.y = ((moddedTarget.y - reversedForward.y) * deltaPercent) + reversedForward.y;
+//	lerpedTarget.z = ((moddedTarget.z - reversedForward.z) * deltaPercent) + reversedForward.z;
+//
+//	std::cout << "Forward: " << lerpedTarget.x << " " << lerpedTarget.y << " " << lerpedTarget.z << std::endl;
+//
+//	if (Vector3LengthSqr(lerpedTarget) > 0.0001)
+//	{
+//		LookAt(lerpedTarget, desiredUp);
+//	}
+//}

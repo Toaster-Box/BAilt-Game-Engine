@@ -85,17 +85,23 @@
 		static void GetCamera3DRight(WrenVM* vm);
 		static void GetCamera3DUp(WrenVM* vm);
 		static void SetCamera3DPosition(WrenVM* vm);
-		static void SetCamera3DPositionFromList(WrenVM* vm);
 		static void Camera3DLookAt(WrenVM* vm);
-		static void Camera3DLookAtFromList(WrenVM* vm);
 		static void Camera3DLookAtPos(WrenVM* vm);
-		static void Camera3DLookAtPosFromList(WrenVM* vm);
 		//ObjectHandler3D fns
 		static void CreateObject3D(WrenVM* vm);
 		//BaseObject3D fns
 		static void GetObject3DPosition(WrenVM* vm);
 		static void SetObject3DPosition(WrenVM* vm);
-		static void SetObject3DPositionFromList(WrenVM* vm);
+		static void GetObject3DForward(WrenVM* vm);
+		static void GetObject3DRight(WrenVM* vm);
+		static void GetObject3DUp(WrenVM* vm);
+		static void Object3DLookAt(WrenVM* vm);
+		static void Object3DLookAtPos(WrenVM* vm);
+		static void Object3DLookAtLerp(WrenVM* vm);
+		static void Object3DLookAtPosLerp(WrenVM* vm);
+		static void Object3DPitch(WrenVM* vm);
+		static void Object3DYaw(WrenVM* vm);
+		static void Object3DRoll(WrenVM* vm);
 
 
 		int m_slotCount = 0;
