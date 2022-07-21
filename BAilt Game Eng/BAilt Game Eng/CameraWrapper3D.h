@@ -21,10 +21,9 @@ namespace
 		Vector3	GetCameraRight() { return Vector3Negate(m_left); }
 		Vector3	GetCameraUp() { return m_rayCamera.up; }
 		void SetCameraPosition(Vector3& posIn); 
+		void SetFOV(float fovIn) { m_rayCamera.fovy = fovIn; }
 
 		Camera3D* GetCameraPTR() { return &m_rayCamera; }
-
-		void SetFOV(float& angle) { m_rayCamera.fovy = angle; }
 
 		void SetProjection(CameraProjection proj) { m_rayCamera.projection = proj; }
 

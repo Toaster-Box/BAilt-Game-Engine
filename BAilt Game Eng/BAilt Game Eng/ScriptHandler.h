@@ -37,7 +37,7 @@
 		void SetTimeStepPTR(double* timeStepIn_ptr) { m_localTimeSetp_ptr = timeStepIn_ptr; }
 		void SetMasterGraphicsHandlerPTR(MasterGraphicsHandler* MasterGraphicsHandlerIn_ptr) { m_LocalMasterGraphicsHandler_ptr = MasterGraphicsHandlerIn_ptr; }
 		void SetObjHandler3DPTR(ObjectHandler3D* ObjHandlerIn_ptr) { m_LocalObjHandler3D_ptr = ObjHandlerIn_ptr; }
-		void SetScriptFileDirectory(std::string* filePathIn_ptr) { m_LocalScriptFileDirectory_ptr = filePathIn_ptr; }
+		void SetScriptFileDirectory(std::string* filePathIn_ptr) { m_localFileDirectory_ptr = filePathIn_ptr; }
 
 	private:
 
@@ -54,6 +54,7 @@
 		static void GetTimeStep(WrenVM* vm);
 		static void AddClassToContainer(WrenVM* vm);
 		static void AddClassInstanceToContainer(WrenVM* vm);
+		static void SetDirectory(WrenVM* vm);
 		//Math fns
 		static void WrenMathSin(WrenVM* vm);
 		static void WrenMathCos(WrenVM* vm);
@@ -87,6 +88,7 @@
 		static void SetCamera3DPosition(WrenVM* vm);
 		static void Camera3DLookAt(WrenVM* vm);
 		static void Camera3DLookAtPos(WrenVM* vm);
+		static void Camera3DSetFOV(WrenVM* vm);
 		//ObjectHandler3D fns
 		static void CreateObject3D(WrenVM* vm);
 		//BaseObject3D fns
@@ -111,12 +113,12 @@
 		double* m_localTimeSetp_ptr;
 		MasterGraphicsHandler* m_LocalMasterGraphicsHandler_ptr;
 		ObjectHandler3D* m_LocalObjHandler3D_ptr;
-		std::string* m_LocalScriptFileDirectory_ptr;
+		std::string* m_localFileDirectory_ptr;
 
 		static double* m_timeStep_ptr;
 		static MasterGraphicsHandler* m_MasterGraphicsHandler_ptr;
 		static ObjectHandler3D* m_ObjHandler3D_ptr;
-		static std::string* m_ScriptFileDirectory_ptr;
+		static std::string* m_fileDirectory_ptr;
 
 		static std::vector<WrenHandle*> m_ModuleHandleContainer;
 		static std::vector<WrenHandle*> m_ClassHandleContainer;

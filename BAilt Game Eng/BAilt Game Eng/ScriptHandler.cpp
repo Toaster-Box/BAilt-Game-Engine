@@ -2,7 +2,7 @@
 
 //Wont work in the .h for some fucking reason
 double* ScriptHandler::m_timeStep_ptr = NULL;
-std::string* ScriptHandler::m_ScriptFileDirectory_ptr = NULL;
+std::string* ScriptHandler::m_fileDirectory_ptr = NULL;
 
 std::vector<WrenHandle*> ScriptHandler::m_ModuleHandleContainer;
 std::vector<WrenHandle*> ScriptHandler::m_ClassHandleContainer;
@@ -56,7 +56,7 @@ void ScriptHandler::RunBootScript()
 	m_timeStep_ptr = m_localTimeSetp_ptr;
 	m_MasterGraphicsHandler_ptr = m_LocalMasterGraphicsHandler_ptr;
 	m_ObjHandler3D_ptr = m_LocalObjHandler3D_ptr;
-	m_ScriptFileDirectory_ptr = m_LocalScriptFileDirectory_ptr;
+	m_fileDirectory_ptr = m_localFileDirectory_ptr;
 
 	//Get a Handle for the OnUpdate() function as the first handle in the method container
 	//needs to be here instead of contructor to makes sure container doesnt go back to pNULL
@@ -83,7 +83,7 @@ void ScriptHandler::Update()
 
 bool ScriptHandler::LoadScript(std::string& ModuleName, std::string& FileName)
 {
-	std::string SourceFilePath = *m_ScriptFileDirectory_ptr;
+	std::string SourceFilePath = *m_fileDirectory_ptr;
 	SourceFilePath.append(FileName);
 
 	char* scriptCode = LoadFileText(const_cast<char*>(SourceFilePath.c_str()));
@@ -147,7 +147,7 @@ WrenLoadModuleResult ScriptHandler::LoadModule(WrenVM* vm, const char* moduleFil
 {
 	WrenLoadModuleResult result = { NULL };
 
-	std::string ModuleFilePathSTR = *m_ScriptFileDirectory_ptr;
+	std::string ModuleFilePathSTR = *m_fileDirectory_ptr;
 	ModuleFilePathSTR.append(moduleFileName);
 	ModuleFilePathSTR.append(".wren");
 	char* moduleFilePathsCharArr = const_cast<char*>(ModuleFilePathSTR.c_str());
@@ -193,6 +193,10 @@ WrenForeignMethodFn ScriptHandler::BindForeignMethod(WrenVM* vm, const char* mod
 		else if (isStatic && strcmp(signature, "AddClassInstanceToContainer(_)") == 0)
 		{
 			return AddClassInstanceToContainer;
+		}
+		else if (isStatic && strcmp(signature, "SetDirectory(_)") == 0)
+		{
+			return SetDirectory;
 		}
 	}
 	else if (strcmp(className, "Math") == 0)
@@ -329,6 +333,10 @@ WrenForeignMethodFn ScriptHandler::BindForeignMethod(WrenVM* vm, const char* mod
 		{
 			return Camera3DLookAtPos;
 		}
+		else if (isStatic && strcmp(signature, "Camera3DSetFOV(_)") == 0)
+		{
+			return Camera3DSetFOV;
+		}
 	}
 	else if (strcmp(className, "ObjectHandler3D") == 0)
 	{
@@ -355,11 +363,11 @@ WrenForeignMethodFn ScriptHandler::BindForeignMethod(WrenVM* vm, const char* mod
 		{
 			return GetObject3DForward;
 		}
-		else if (isStatic && strcmp(signature, "GetObject3DRight(_,_)") == 0)
+		else if (isStatic && strcmp(signature, "GetObject3DRight(_)") == 0)
 		{
 			return GetObject3DRight;
 		}
-		else if (isStatic && strcmp(signature, "GetObject3DUp[(_,_)") == 0)
+		else if (isStatic && strcmp(signature, "GetObject3DUp[(_)") == 0)
 		{
 			return GetObject3DUp;
 		}
@@ -469,6 +477,10 @@ void ScriptHandler::AddClassInstanceToContainer(WrenVM* vm)
 
 	//Store the handle locally so it can be freed in the destructorlater
 	m_ClassHandleContainer.push_back(WrenClassHandle);
+}
+void ScriptHandler::SetDirectory(WrenVM* vm)
+{
+	*m_fileDirectory_ptr = wrenGetSlotString(vm, 1);
 }
 
 //math
@@ -730,6 +742,11 @@ void ScriptHandler::Camera3DLookAtPos(WrenVM* vm)
 
 	m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetCameraWrapperPTR()->LookAtPos(targetVec, upVec);
 }
+void ScriptHandler::Camera3DSetFOV(WrenVM* vm)
+{
+	float angle = wrenGetSlotDouble(vm, 1);
+	m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetCameraWrapperPTR()->SetFOV(angle);
+}
 
 //ObjectHandler3D
 void ScriptHandler::CreateObject3D(WrenVM* vm)
@@ -737,7 +754,11 @@ void ScriptHandler::CreateObject3D(WrenVM* vm)
 	//create an object and return its Identifier
 	std::string fileName = wrenGetSlotString(vm, 1);
 
-	unsigned int createdObjIndex = m_ObjHandler3D_ptr->CreateObject(fileName);
+	std::string directory = *m_fileDirectory_ptr;
+
+	directory.append(fileName);
+
+	unsigned int createdObjIndex = m_ObjHandler3D_ptr->CreateObject(directory);
 
 	wrenSetSlotDouble(vm, 0, createdObjIndex);
 }
@@ -772,7 +793,7 @@ void ScriptHandler::GetObject3DPosition(WrenVM* vm)
 	//return vecot as a list in slot 0
 	wrenSetSlotNewList(vm, 0);
 
-	wrenSetSlotDouble(vm, 2, 0.0f - Position.x);
+	wrenSetSlotDouble(vm, 2, Position.x);
 	wrenSetSlotDouble(vm, 3, Position.y);
 	wrenSetSlotDouble(vm, 4, Position.z);
 
@@ -875,7 +896,7 @@ void ScriptHandler::GetObject3DRight(WrenVM* vm)
 	//return vecot as a list in slot 0
 	wrenSetSlotNewList(vm, 0);
 
-	wrenSetSlotDouble(vm, 2, 0.0f - right.x);
+	wrenSetSlotDouble(vm, 2, -right.x);
 	wrenSetSlotDouble(vm, 3, right.y);
 	wrenSetSlotDouble(vm, 4, right.z);
 
