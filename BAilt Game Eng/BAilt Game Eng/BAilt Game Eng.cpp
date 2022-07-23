@@ -14,6 +14,7 @@
 std::string ConfigFilePath = "./config.txt";
 std::string WindowName = "BAilt Engine";
 std::string ScriptDirectory = "D:/";
+std::string missingTexture = "D:/MissingTexture.png";
 
 double previousTime = GetTime();
 double* timeStep_ptr = new double;
@@ -33,6 +34,9 @@ int main()
 
 	//Give the timestep an initial value
 	*timeStep_ptr = previousTime;
+
+	//avoiding possible raylib exception
+	MainObjHandler3D.AddTextureToContainer(missingTexture);
 
 	//init Script Handler, will probably all be moved to constructor sometime. for now cutting down on constructor args
 	MainScriptHandler.SetTimeStepPTR(timeStep_ptr);

@@ -6,6 +6,7 @@
 #include "BaseObject3D.h"
 
 #include "raylib.h"
+//#include "rlgl.h"
 
 //I don't know why but the anonymous namspace prevents overdefinition linker errors
 namespace
@@ -27,13 +28,16 @@ namespace
 		BaseObject3D* GetObjectPTR(unsigned int Index);
 
 	private:
+		void DrawObject3D(unsigned int objIndex, bool isStatic);
+
 		std::vector<BaseObject3D*> m_ObjContainer3d;
 
-		std::vector<Texture*> m_TexContainer;
+		std::vector<Texture> m_TexContainer;
 		std::vector<std::string> m_TexNameContainer;
 
-		std::vector<Mesh*> m_MeshContainer;
-		std::vector<std::string> m_MeshNameContainer;
+		std::vector<Model*> m_ModelContainer;
+		std::vector<std::string> m_ModelNameContainer;
+		std::vector<unsigned int> m_numInstances;
 	};
 }
 
@@ -43,7 +47,6 @@ ObjectHandler3D::ObjectHandler3D()
 {
 
 }
-
 //Function to draw all objects in cointainer. Primarily for use in GraphicsHandler3D
 void ObjectHandler3D::Render(bool isStatic)
 {
@@ -59,11 +62,7 @@ void ObjectHandler3D::Render(bool isStatic)
 
 	for (unsigned int i = 0; i < m_ObjContainer3d.size(); i++)
 	{
-		//Only render if static/dynamic bools match
-		if (isStatic == m_ObjContainer3d[i]->GetStaticStatus())
-		{
-			m_ObjContainer3d[i]->Render();
-		}
+		DrawObject3D(i, isStatic);
 	}
 }
 
@@ -83,9 +82,41 @@ void ObjectHandler3D::Update()
 //Create new object from parameters and add it to container. Returns pointer to object
 unsigned int ObjectHandler3D::CreateObject(std::string& fileName)
 {
-	BaseObject3D* NewObj = new BaseObject3D(fileName, m_ObjContainer3d.size());
+	BaseObject3D* NewObj = new BaseObject3D(m_ObjContainer3d.size(), m_ModelContainer.size());
 
+	Model* objModel;
+
+	bool alreadyLoaded = false;
+	unsigned int indexIfLoaded = NULL;
+
+	for (unsigned int i = 0; i < m_ModelNameContainer.size(); i++)
+	{
+		if (fileName == m_ModelNameContainer[i])
+		{
+			indexIfLoaded = i;
+			alreadyLoaded = true;
+		}
+	}
+
+	if (alreadyLoaded)
+	{
+		std::cout << "Model: " << fileName << " is already loaded. Returning index to previously loaded model" << std::endl;
+
+		objModel = m_ModelContainer[indexIfLoaded];
+	}
+	else
+	{
+		
+		objModel = new Model;
+		*objModel = LoadModel(const_cast<char*>(fileName.c_str()));
+		m_ModelNameContainer.push_back(fileName);
+	}
+
+	m_ModelContainer.push_back(objModel);
 	m_ObjContainer3d.push_back(NewObj);
+
+	m_ModelContainer.back()->transform = *m_ObjContainer3d.back()->GetTransform();
+	m_ModelContainer.back()->materials->maps[MATERIAL_MAP_ALBEDO].texture = m_TexContainer[0];
 	
 	return m_ObjContainer3d.back()->GetIndex();
 }
@@ -118,8 +149,7 @@ unsigned int ObjectHandler3D::AddTextureToContainer(std::string& fileName)
 	}
 	else
 	{
-		Texture* tempTex = new Texture;
-		*tempTex = LoadTexture(const_cast<char*>(fileName.c_str()));
+		Texture tempTex = LoadTexture(const_cast<char*>(fileName.c_str()));
 
 		m_TexContainer.push_back(tempTex);
 		m_TexNameContainer.push_back(fileName);
@@ -153,7 +183,9 @@ void ObjectHandler3D::SetObjectTexture(BaseObject3D* objectIn_ptr, unsigned int 
 		safeMaterialMapIndex = MATERIAL_MAP_ALBEDO;
 	}
 
-	objectIn_ptr->GetModelPTR()->materials->maps[safeMaterialMapIndex].texture = *m_TexContainer[safeTextureIndex];
+	objectIn_ptr->SetTextureMapIndex(safeMaterialMapIndex, safeTextureIndex);
+
+	m_ModelContainer[objectIn_ptr->GetModelIndex()]->materials->maps[safeMaterialMapIndex].texture = m_TexContainer[objectIn_ptr->GetTextureMapIndex(safeMaterialMapIndex)];
 }
 
 
@@ -167,5 +199,15 @@ BaseObject3D* ObjectHandler3D::GetObjectPTR(unsigned int Index)
 	else
 	{
 		return NULL;
+	}
+}
+
+
+void ObjectHandler3D::DrawObject3D(unsigned int objIndex, bool isStatic)
+{
+	if (m_ObjContainer3d[objIndex]->GetStaticStatus() == isStatic)
+	{
+		m_ModelContainer[m_ObjContainer3d[objIndex]->GetModelIndex()]->transform = *m_ObjContainer3d[objIndex]->GetTransform();
+		DrawModel(*m_ModelContainer[m_ObjContainer3d[objIndex]->GetModelIndex()], Vector3{ 0.0f }, 1.0f, WHITE);
 	}
 }

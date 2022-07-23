@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "Transformation.h"
 
@@ -10,34 +11,40 @@
 class BaseObject3D : public Transformation
 {
 public:
-	BaseObject3D(std::string& fileName, unsigned int indexIn);
-
-	void Render();
+	BaseObject3D(unsigned int objIndexIn, unsigned int modelIndexIn);
 
 	virtual void Update();
 
-	void UpdateTransform() { UpdateTransformation(&m_objModel.transform); }
+	void UpdateTransform() { UpdateTransformation(&m_Transform); }
+	Matrix* GetTransform() { return &m_Transform; }
 
-	void LoadModelFromFile(std::string& fileName);
-
-	unsigned int GetIndex() { return m_index; }
 	bool GetStaticStatus() { return m_isStatic; }
 	void SetStaticStatus(bool& staticStausIn) { m_isStatic = staticStausIn; }
 
 	bool GetUpdateStatus() { return m_update; }
 	void SetUpdateStatus(bool& updateStausIn) { m_update = updateStausIn; }
 
-	//temp will be refactored out
-	Model* GetModelPTR() { return &m_objModel; }
+	unsigned int GetIndex() { return m_objectIndex; }
+
+	unsigned int GetModelIndex() { return m_modelIndex; }
+	void SetModelIndex(unsigned int indexIn) { m_modelIndex = indexIn; }
+
+	unsigned int GetTextureMapIndex(unsigned int materialIndex) { return m_materialIndicies[materialIndex]; }
+	void SetTextureMapIndex(unsigned int materialIndex, unsigned int indexIn) { m_materialIndicies[materialIndex] = indexIn; }
+
 
 private:
 
-	unsigned int m_index;
+	unsigned int m_objectIndex;
+	unsigned int m_modelIndex;
+
+	std::vector<int> m_materialIndicies;
+
 
 	bool m_isStatic = true;
 	bool m_update = true;
 
 	
-	Model m_objModel;
+	Matrix m_Transform;
 };
 
