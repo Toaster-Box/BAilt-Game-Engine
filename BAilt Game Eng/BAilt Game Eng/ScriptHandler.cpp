@@ -399,6 +399,10 @@ WrenForeignMethodFn ScriptHandler::BindForeignMethod(WrenVM* vm, const char* mod
 		{
 			return Object3DRoll;
 		}
+		else if (isStatic && strcmp(signature, "SetObject3DTexture(_,_,_)") == 0)
+		{
+			return SetObject3DTexture;
+		}
 	}
 	else if (strcmp(className, "ObjectHandler2D") == 0)
 	{
@@ -1159,4 +1163,18 @@ void ScriptHandler::Object3DRoll(WrenVM* vm)
 	{
 		std::cout << "Error rolling object" << std::endl;
 	}
+}
+void ScriptHandler::SetObject3DTexture(WrenVM* vm)
+{
+	//0-3
+	wrenEnsureSlots(vm, 4);
+
+	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
+	std::string textureFileName = *m_fileDirectory_ptr;
+	textureFileName.append(wrenGetSlotString(vm, 2));
+	unsigned int materialIndex = (unsigned int)wrenGetSlotDouble(vm, 3);
+
+	BaseObject3D* obj_ptr = m_ObjHandler3D_ptr->GetObjectPTR(objIndex);
+	unsigned int textureIndex = m_ObjHandler3D_ptr->AddTextureToContainer(textureFileName);
+	m_ObjHandler3D_ptr->SetObjectTexture(obj_ptr, textureIndex, materialIndex);
 }

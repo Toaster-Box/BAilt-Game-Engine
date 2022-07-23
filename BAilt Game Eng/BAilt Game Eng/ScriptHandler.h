@@ -104,6 +104,7 @@
 		static void Object3DPitch(WrenVM* vm);
 		static void Object3DYaw(WrenVM* vm);
 		static void Object3DRoll(WrenVM* vm);
+		static void SetObject3DTexture(WrenVM* vm);
 
 
 		int m_slotCount = 0;

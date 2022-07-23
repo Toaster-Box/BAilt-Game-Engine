@@ -9,7 +9,7 @@ BaseObject3D::BaseObject3D(std::string& fileName, unsigned int indexIn)
 
 	Texture texture = LoadTexture("C:/Users/halla10/Documents/3 CODING/tempresources/MissingTexture.png");
 
-	m_objModel.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
+	m_objModel.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = texture;
 }
 
 //Draw object on screen

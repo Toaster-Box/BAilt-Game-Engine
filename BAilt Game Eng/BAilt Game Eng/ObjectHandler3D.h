@@ -5,6 +5,8 @@
 
 #include "BaseObject3D.h"
 
+#include "raylib.h"
+
 //I don't know why but the anonymous namspace prevents overdefinition linker errors
 namespace
 {
@@ -19,10 +21,19 @@ namespace
 		unsigned int CreateObject(std::string& fileName);
 		void DeleteObject();
 
+		unsigned int AddTextureToContainer(std::string& fileName);
+		void SetObjectTexture(BaseObject3D* objectIn_ptr, unsigned int textureIndex, int materialMapIndex);
+
 		BaseObject3D* GetObjectPTR(unsigned int Index);
 
 	private:
 		std::vector<BaseObject3D*> m_ObjContainer3d;
+
+		std::vector<Texture*> m_TexContainer;
+		std::vector<std::string> m_TexNameContainer;
+
+		std::vector<Mesh*> m_MeshContainer;
+		std::vector<std::string> m_MeshNameContainer;
 	};
 }
 
@@ -84,6 +95,67 @@ void ObjectHandler3D::DeleteObject()
 {
 
 }
+
+
+unsigned int ObjectHandler3D::AddTextureToContainer(std::string& fileName)
+{
+	bool alreadyLoaded = false;
+	unsigned int indexIfLoaded = NULL;
+
+	for (unsigned int i = 0; i < m_TexContainer.size(); i++)
+	{
+		if (fileName == m_TexNameContainer[i])
+		{
+			indexIfLoaded = i;
+			alreadyLoaded = true;
+		}
+	}
+
+	if (alreadyLoaded)
+	{
+		std::cout << "Texture: " << fileName << " is already loaded. Returning index to previously loaded texture" << std::endl;
+		return indexIfLoaded;
+	}
+	else
+	{
+		Texture* tempTex = new Texture;
+		*tempTex = LoadTexture(const_cast<char*>(fileName.c_str()));
+
+		m_TexContainer.push_back(tempTex);
+		m_TexNameContainer.push_back(fileName);
+
+		//returns the index to the texture in the container
+		return m_TexContainer.size() - 1;
+	}
+}
+
+
+void ObjectHandler3D::SetObjectTexture(BaseObject3D* objectIn_ptr, unsigned int textureIndex, int materialMapIndex)
+{
+	unsigned int safeTextureIndex;
+	//Prevent access violations
+	if (textureIndex <= m_TexContainer.size() - 1)
+	{
+		safeTextureIndex = textureIndex;
+	}
+	else
+	{
+		safeTextureIndex =  NULL;
+	}
+
+	int safeMaterialMapIndex;
+	if (textureIndex <= MATERIAL_MAP_BRDF)
+	{
+		safeMaterialMapIndex = materialMapIndex;
+	}
+	else
+	{
+		safeMaterialMapIndex = MATERIAL_MAP_ALBEDO;
+	}
+
+	objectIn_ptr->GetModelPTR()->materials->maps[safeMaterialMapIndex].texture = *m_TexContainer[safeTextureIndex];
+}
+
 
 BaseObject3D* ObjectHandler3D::GetObjectPTR(unsigned int Index)
 {

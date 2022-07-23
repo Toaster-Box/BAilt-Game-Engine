@@ -27,6 +27,9 @@ public:
 	bool GetUpdateStatus() { return m_update; }
 	void SetUpdateStatus(bool& updateStausIn) { m_update = updateStausIn; }
 
+	//temp will be refactored out
+	Model* GetModelPTR() { return &m_objModel; }
+
 private:
 
 	unsigned int m_index;
