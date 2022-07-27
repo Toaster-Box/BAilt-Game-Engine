@@ -18,7 +18,7 @@ public:
 	Vector3 GetPosition() { return m_position; }
 	void SetPosition(Vector3& PosIn) { m_position = PosIn; }
 	Vector3 GetForward() { return m_forward; }
-	Vector3 GetRight() { return Vector3Negate(m_left); }
+	Vector3 GetRight() { return m_right; }
 	Vector3 GetUp() { return m_up; }
 
 
@@ -44,7 +44,7 @@ protected:
 	Vector3 m_position = { 0.0f, 0.0f, 0.0f };
 
 	Vector3 m_forward = { 0.0f, 1.0f, 0.0f };
-	Vector3 m_left = { 1.0f, 0.0f, 0.0f }; //vector here is actually right
+	Vector3 m_right = { -1.0f, 0.0f, 0.0f }; 
 	Vector3 m_up = { 0.0f, 0.0f, 1.0f };
 
 private:

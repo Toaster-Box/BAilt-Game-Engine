@@ -52,18 +52,13 @@ MasterGraphicsHandler::MasterGraphicsHandler(ConfigLoader* ConfLoaderIn_ptr, Obj
 //Main Function which gets run every frame
 void MasterGraphicsHandler::UpdateScreen()
 {
-	//Begin frame buffer
-	BeginDrawing();
-
-	// clear screen to draw new objects
-	ClearBackground(LIGHTGRAY);
-
 	//Draw 3D Components and then Draw 2D components on top
-	m_GraphicsHandler3D_ptr->Update();
-	m_GraphicsHandler2D_ptr->Update();
+	m_GraphicsHandler3D_ptr->GeometryPass();
+	m_GraphicsHandler3D_ptr->LightPass();
+	m_GraphicsHandler3D_ptr->PostProcessingPass();
+	m_GraphicsHandler3D_ptr->DrawFrameToScreen();
 
-	//End frame buffer and swap buffers
-	EndDrawing();
+	m_GraphicsHandler2D_ptr->Update();
 }
 
 //Reload new global variables during runtime

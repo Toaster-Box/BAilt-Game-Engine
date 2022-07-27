@@ -11,24 +11,28 @@
 
 #include "raylib.h"
 
-std::string ConfigFilePath = "./config.txt";
-std::string WindowName = "BAilt Engine";
-std::string ScriptDirectory = "D:/";
-std::string missingTexture = "D:/MissingTexture.png";
 
-double previousTime = GetTime();
-double* timeStep_ptr = new double;
-
-ConfigLoader MainConfigLoader(ConfigFilePath);
-
-ObjectHandler2D MainObjHandler2D;
-ObjectHandler3D MainObjHandler3D;
-MasterGraphicsHandler MainMasterGraphicsHandler(&MainConfigLoader, &MainObjHandler2D, &MainObjHandler3D, WindowName);
-
-ScriptHandler MainScriptHandler;
 
 int main()
 {
+	std::string ConfigFilePath = "./config.txt";
+	std::string WindowName = "BAilt Engine";
+	std::string ScriptDirectory = "D:/";
+	std::string missingTexture = "D:/MissingTexture.png";
+
+	double previousTime = GetTime();
+	double* timeStep_ptr = new double;
+
+	ConfigLoader MainConfigLoader(ConfigFilePath);
+
+	ObjectHandler2D MainObjHandler2D;
+	ObjectHandler3D MainObjHandler3D;
+	MasterGraphicsHandler MainMasterGraphicsHandler(&MainConfigLoader, &MainObjHandler2D, &MainObjHandler3D, WindowName);
+
+	ScriptHandler MainScriptHandler;
+
+
+
 	//Prevent window from closing when ESC is pressed
 	SetExitKey(NULL);
 

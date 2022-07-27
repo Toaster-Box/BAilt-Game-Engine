@@ -6,7 +6,7 @@
 #include "BaseObject3D.h"
 
 #include "raylib.h"
-//#include "rlgl.h"
+#include "rlgl.h"
 
 //I don't know why but the anonymous namspace prevents overdefinition linker errors
 namespace
@@ -16,7 +16,8 @@ namespace
 	public:
 		ObjectHandler3D();
 
-		void Render(bool isStatic);
+		void UpdateAllTransforms();
+		void Render(bool isStatic, bool hasTransparency);
 		void Update();
 
 		unsigned int CreateObject(std::string& fileName);
@@ -27,8 +28,10 @@ namespace
 
 		BaseObject3D* GetObjectPTR(unsigned int Index);
 
+		void SetGeometryPassShaderPTR(Shader GeoPassIn) { m_GeometryPassShader_ptr = GeoPassIn; }
+
 	private:
-		void DrawObject3D(unsigned int objIndex, bool isStatic);
+		void DrawObject3D(unsigned int objIndex);
 
 		std::vector<BaseObject3D*> m_ObjContainer3d;
 
@@ -38,6 +41,8 @@ namespace
 		std::vector<Model*> m_ModelContainer;
 		std::vector<std::string> m_ModelNameContainer;
 		std::vector<unsigned int> m_numInstances;
+
+		Shader m_GeometryPassShader_ptr;
 	};
 }
 
@@ -47,22 +52,25 @@ ObjectHandler3D::ObjectHandler3D()
 {
 
 }
-//Function to draw all objects in cointainer. Primarily for use in GraphicsHandler3D
-void ObjectHandler3D::Render(bool isStatic)
-{
-	//update all transforms before rendering to take advantage of processor preloading
-	for (unsigned int i = 0; i < m_ObjContainer3d.size(); i++)
-	{
-		//Update transform of about to be rendered objects
-		if (isStatic == m_ObjContainer3d[i]->GetStaticStatus())
-		{
-			m_ObjContainer3d[i]->UpdateTransform();
-		}
-	}
 
+//Update all transforms to take advantage of CPU preloading
+void ObjectHandler3D::UpdateAllTransforms()
+{
 	for (unsigned int i = 0; i < m_ObjContainer3d.size(); i++)
 	{
-		DrawObject3D(i, isStatic);
+		m_ObjContainer3d[i]->UpdateTransform();
+	}
+}
+
+//Function to draw all objects in cointainer. Primarily for use in GraphicsHandler3D
+void ObjectHandler3D::Render(bool isStatic, bool hasTransparency)
+{
+	for (unsigned int i = 0; i < m_ObjContainer3d.size(); i++)
+	{
+		if (isStatic == m_ObjContainer3d[i]->GetStaticStatus() || hasTransparency == m_ObjContainer3d[i]->GetTransparencyStatus())
+		{
+			DrawObject3D(i);
+		}
 	}
 }
 
@@ -116,7 +124,9 @@ unsigned int ObjectHandler3D::CreateObject(std::string& fileName)
 	m_ObjContainer3d.push_back(NewObj);
 
 	m_ModelContainer.back()->transform = *m_ObjContainer3d.back()->GetTransform();
-	m_ModelContainer.back()->materials->maps[MATERIAL_MAP_ALBEDO].texture = m_TexContainer[0];
+	m_ModelContainer.back()->materials[0].maps[MATERIAL_MAP_ALBEDO].texture = m_TexContainer[0];
+	GenMeshTangents(&m_ModelContainer.back()->meshes[0]);
+	m_ModelContainer.back()->materials[0].shader = m_GeometryPassShader_ptr;
 	
 	return m_ObjContainer3d.back()->GetIndex();
 }
@@ -185,7 +195,7 @@ void ObjectHandler3D::SetObjectTexture(BaseObject3D* objectIn_ptr, unsigned int 
 
 	objectIn_ptr->SetTextureMapIndex(safeMaterialMapIndex, safeTextureIndex);
 
-	m_ModelContainer[objectIn_ptr->GetModelIndex()]->materials->maps[safeMaterialMapIndex].texture = m_TexContainer[objectIn_ptr->GetTextureMapIndex(safeMaterialMapIndex)];
+	m_ModelContainer[objectIn_ptr->GetModelIndex()]->materials[0].maps[safeMaterialMapIndex].texture = m_TexContainer[objectIn_ptr->GetTextureMapIndex(safeMaterialMapIndex)];
 }
 
 
@@ -203,11 +213,12 @@ BaseObject3D* ObjectHandler3D::GetObjectPTR(unsigned int Index)
 }
 
 
-void ObjectHandler3D::DrawObject3D(unsigned int objIndex, bool isStatic)
+void ObjectHandler3D::DrawObject3D(unsigned int objIndex)
 {
-	if (m_ObjContainer3d[objIndex]->GetStaticStatus() == isStatic)
-	{
-		m_ModelContainer[m_ObjContainer3d[objIndex]->GetModelIndex()]->transform = *m_ObjContainer3d[objIndex]->GetTransform();
-		DrawModel(*m_ModelContainer[m_ObjContainer3d[objIndex]->GetModelIndex()], Vector3{ 0.0f }, 1.0f, WHITE);
-	}
+	rlSetUniformSampler(SHADER_LOC_MAP_NORMAL, m_ModelContainer[m_ObjContainer3d[objIndex]->GetModelIndex()]->materials[0].maps[MATERIAL_MAP_NORMAL].texture.id);
+	rlSetUniformSampler(SHADER_LOC_MAP_ROUGHNESS, m_ModelContainer[m_ObjContainer3d[objIndex]->GetModelIndex()]->materials[0].maps[MATERIAL_MAP_ROUGHNESS].texture.id);
+	rlSetUniformSampler(SHADER_LOC_MAP_EMISSION, m_ModelContainer[m_ObjContainer3d[objIndex]->GetModelIndex()]->materials[0].maps[MATERIAL_MAP_EMISSION].texture.id);
+
+	m_ModelContainer[m_ObjContainer3d[objIndex]->GetModelIndex()]->transform = *m_ObjContainer3d[objIndex]->GetTransform();
+	DrawModel(*m_ModelContainer[m_ObjContainer3d[objIndex]->GetModelIndex()], Vector3{ 0.0f }, 1.0f, WHITE);
 }

@@ -21,6 +21,9 @@ public:
 	bool GetStaticStatus() { return m_isStatic; }
 	void SetStaticStatus(bool& staticStausIn) { m_isStatic = staticStausIn; }
 
+	bool GetTransparencyStatus() { return m_hasTransparency; }
+	void SetTransparencyStatus(bool& transparencyStatusIn) { m_hasTransparency = transparencyStatusIn; }
+
 	bool GetUpdateStatus() { return m_update; }
 	void SetUpdateStatus(bool& updateStausIn) { m_update = updateStausIn; }
 
@@ -42,6 +45,7 @@ private:
 
 
 	bool m_isStatic = true;
+	bool m_hasTransparency = false;
 	bool m_update = true;
 
 	

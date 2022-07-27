@@ -13,7 +13,7 @@ Transformation::~Transformation()
 
 void Transformation::Pitch(float& angle)
 {
-	RotateAxisAngle(angle, m_left);
+	RotateAxisAngle(angle, m_right);
 }
 
 
@@ -34,7 +34,7 @@ void Transformation::RotateAxisAngle(float& angle, Vector3& axis)
 	axis = Vector3Normalize(axis);
 	Quaternion tempQuat = QuaternionFromAxisAngle(axis, angle);
 
-	m_left = Vector3RotateByQuaternion(m_left, tempQuat);
+	m_right = Vector3RotateByQuaternion(m_right, tempQuat);
 	m_forward = Vector3RotateByQuaternion(m_forward, tempQuat);
 	m_up = Vector3RotateByQuaternion(m_up, tempQuat);
 
@@ -59,8 +59,8 @@ void Transformation::LookAt(Vector3 targetDir, Vector3 desiredUp)
 	Quaternion rotQuat1 = QuaternionFromVector3ToVector3(worldForward, targetDir);
 	rotQuat1 = QuaternionNormalize(rotQuat1);
 
-	m_left = Vector3CrossProduct(targetDir, desiredUp);
-	desiredUp = Vector3CrossProduct(m_left, targetDir);
+	m_right = Vector3CrossProduct(targetDir, desiredUp);
+	desiredUp = Vector3CrossProduct(m_right, targetDir);
 	desiredUp = Vector3Normalize(desiredUp);
 
 	Vector3 newUp = Vector3RotateByQuaternion(worldUp, rotQuat1);
@@ -81,7 +81,7 @@ void Transformation::LookAt(Vector3 targetDir, Vector3 desiredUp)
 
 	m_forward = Vector3RotateByQuaternion(worldForward, m_orientation);
 	m_up = Vector3RotateByQuaternion(worldUp, m_orientation);
-	m_left = Vector3RotateByQuaternion(worldRight, m_orientation);
+	m_right = Vector3RotateByQuaternion(worldRight, m_orientation);
 }
 
 
@@ -142,7 +142,7 @@ void Transformation::LookAtPosLerp(Vector3& targetPos, Vector3& desiredUp, float
 
 void Transformation::UpdateTransformation(Matrix* transformationMat_ptr) 
 {
-	m_left = Vector3Normalize(m_left);
+	m_right = Vector3Normalize(m_right);
 	m_forward = Vector3Normalize(m_forward);
 	m_up = Vector3Normalize(m_up);
 
