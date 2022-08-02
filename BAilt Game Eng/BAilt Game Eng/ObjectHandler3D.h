@@ -28,7 +28,7 @@ namespace
 
 		BaseObject3D* GetObjectPTR(unsigned int Index);
 
-		void SetGeometryPassShaderPTR(Shader GeoPassIn) { m_GeometryPassShader_ptr = GeoPassIn; }
+		void SetGeometryPassShaderPTR(Shader GeoPassIn) { m_GeometryPassShader = GeoPassIn; }
 
 	private:
 		void DrawObject3D(unsigned int objIndex);
@@ -42,7 +42,7 @@ namespace
 		std::vector<std::string> m_ModelNameContainer;
 		std::vector<unsigned int> m_numInstances;
 
-		Shader m_GeometryPassShader_ptr;
+		Shader m_GeometryPassShader;
 	};
 }
 
@@ -126,7 +126,7 @@ unsigned int ObjectHandler3D::CreateObject(std::string& fileName)
 	m_ModelContainer.back()->transform = *m_ObjContainer3d.back()->GetTransform();
 	m_ModelContainer.back()->materials[0].maps[MATERIAL_MAP_ALBEDO].texture = m_TexContainer[0];
 	GenMeshTangents(&m_ModelContainer.back()->meshes[0]);
-	m_ModelContainer.back()->materials[0].shader = m_GeometryPassShader_ptr;
+	m_ModelContainer.back()->materials[0].shader = m_GeometryPassShader;
 	
 	return m_ObjContainer3d.back()->GetIndex();
 }

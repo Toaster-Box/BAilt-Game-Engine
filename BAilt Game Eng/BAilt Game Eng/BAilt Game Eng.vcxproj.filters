@@ -48,6 +48,9 @@
     <ClCompile Include="GBuffer.cpp">
       <Filter>Source Files\Graphics Source</Filter>
     </ClCompile>
+    <ClCompile Include="LBuffer.cpp">
+      <Filter>Source Files\Graphics Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseObject2D.h">
@@ -84,6 +87,9 @@
       <Filter>Header Files\Graphics Headers</Filter>
     </ClInclude>
     <ClInclude Include="GBuffer.h">
+      <Filter>Header Files\Graphics Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="LBuffer.h">
       <Filter>Header Files\Graphics Headers</Filter>
     </ClInclude>
   </ItemGroup>

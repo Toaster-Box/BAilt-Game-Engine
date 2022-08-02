@@ -1,7 +1,5 @@
 #pragma once
 
-#include "ConfigLoader.h"
-
 #include "raylib.h"
 #include "rlgl.h"
 
@@ -23,17 +21,32 @@ struct GBufferData
 class GBuffer
 {
 public:
-	GBuffer(ConfigLoader* cfgLoaderIn_ptr);
+	GBuffer(int screenWidth, int screenHeight);
 
-	Texture GetBuffferTex() { return m_bufferData.Emissive; }
+	Texture GetWorldPosTex() { return m_GBufferData.WorldPos; }
+	Texture GetDepthTex() { return m_GBufferData.Depth; }
+	Texture GetNormalTex() { return m_GBufferData.Normal; }
+	Texture GetAlbedoTex() { return m_GBufferData.Albedo; }
+	Texture GetMetalnessTex() { return m_GBufferData.Metalness; }
+	Texture GetRoughnessTex() { return m_GBufferData.Roughness; }
+	Texture GetEmissiveTex() { return m_GBufferData.Emissive; }
+
+	unsigned int GetWorldPosTexID() { return m_GBufferData.WorldPos.id; }
+	unsigned int GetDepthTexID() { return m_GBufferData.Depth.id; }
+	unsigned int GetNormalTexID() { return m_GBufferData.Normal.id; }
+	unsigned int GetAlbedoTexID() { return m_GBufferData.Albedo.id; }
+	unsigned int GetMetalnessTexID() { return m_GBufferData.Metalness.id; }
+	unsigned int GetRoughnessTexID() { return m_GBufferData.Roughness.id; }
+	unsigned int GetEmissiveTexID() { return m_GBufferData.Emissive.id; }
+
+	unsigned int GetBufferWidth() { return m_GBufferData.screenWidth; }
+	unsigned int GetBufferHeight() { return m_GBufferData.screenHeight; }
 
 	void BindForWriting();
 	void BindForReading();
 
 private:
 
-	ConfigLoader* m_ConfigLoader_ptr;
-
-	GBufferData m_bufferData;
+	GBufferData m_GBufferData;
 };
 

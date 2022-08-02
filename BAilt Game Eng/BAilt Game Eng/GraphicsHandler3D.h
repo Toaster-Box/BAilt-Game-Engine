@@ -4,6 +4,7 @@
 #include "Transformation.h"
 #include "ObjectHandler3D.h"
 #include "GBuffer.h"
+#include "LBuffer.h"
 
 #include "raylib.h"
 #include "rlgl.h"
@@ -28,7 +29,8 @@ namespace
 
 		CameraWrapper3D m_SceneCamera;
 
-		GBuffer* m_MainGBuffer_ptr;
+		GBuffer* m_GBuffer_ptr;
+		LBuffer* m_LBuffer_ptr;
 
 		Shader m_GeometryPassShader;
 	};
@@ -40,14 +42,15 @@ GraphicsHandler3D::GraphicsHandler3D(ObjectHandler3D* ObjHandler3DIn_ptr, Config
 
 	m_ObjectHandler3D_ptr = ObjHandler3DIn_ptr;
 
-	//Init Cameras
+	//Init camera
 	m_SceneCamera.SetFOV(*m_ConfigLoader_ptr->GetCameraFOV());
 	m_SceneCamera.SetProjection(CAMERA_PERSPECTIVE);
 
-	//Init GBuffer
-	m_MainGBuffer_ptr = new GBuffer(m_ConfigLoader_ptr);
+	//Init buffers
+	m_GBuffer_ptr = new GBuffer(*m_ConfigLoader_ptr->GetConfigScreenWidth(), *m_ConfigLoader_ptr->GetConfigScreenHeight());
+	m_LBuffer_ptr = new LBuffer(m_GBuffer_ptr);
 
-	//Init Shaders
+	//Init Shader
 	m_GeometryPassShader = LoadShader("D:/GBufferShader.vs", "D:/GBufferShader.fs");
 	m_GeometryPassShader.locs[SHADER_LOC_MAP_NORMAL] = rlGetLocationUniform(m_GeometryPassShader.id, "normalTex");
 	m_GeometryPassShader.locs[SHADER_LOC_MAP_ROUGHNESS] = rlGetLocationUniform(m_GeometryPassShader.id, "roughnessTex");
@@ -61,7 +64,7 @@ void GraphicsHandler3D::GeometryPass()
 {
 	m_ObjectHandler3D_ptr->UpdateAllTransforms();
 
-	m_MainGBuffer_ptr->BindForWriting();
+	m_GBuffer_ptr->BindForWriting();
 
 	BeginMode3D(*m_SceneCamera.GetCameraPTR());
 
@@ -69,12 +72,12 @@ void GraphicsHandler3D::GeometryPass()
 
 	EndMode3D();
 
-	m_MainGBuffer_ptr->BindForReading();
+	m_GBuffer_ptr->BindForReading();
 }
 
 void GraphicsHandler3D::LightPass()
 {
-
+	m_LBuffer_ptr->UpdateLBuffer(*m_SceneCamera.GetCameraPTR());
 }
 
 
@@ -88,7 +91,7 @@ void GraphicsHandler3D::DrawFrameToScreen()
 {
 	BeginDrawing();
 
-	DrawTexture(m_MainGBuffer_ptr->GetBuffferTex(), 0, 0, WHITE);
+	DrawTexture(m_LBuffer_ptr->GetFinalIlluminationBuffer(), 0, 0, WHITE);
 
 	EndDrawing();
 

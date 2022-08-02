@@ -136,6 +136,7 @@
     <ClCompile Include="BaseObject3D.cpp" />
     <ClCompile Include="ConfigLoader.cpp" />
     <ClCompile Include="GBuffer.cpp" />
+    <ClCompile Include="LBuffer.cpp" />
     <ClCompile Include="ScriptHandler.cpp" />
     <ClCompile Include="Transformation.cpp" />
   </ItemGroup>
@@ -147,6 +148,7 @@
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GraphicsHandler2D.h" />
     <ClInclude Include="GraphicsHandler3D.h" />
+    <ClInclude Include="LBuffer.h" />
     <ClInclude Include="MasterGraphicsHandler.h" />
     <ClInclude Include="ObjectHandler2D.h" />
     <ClInclude Include="ObjectHandler3D.h" />
