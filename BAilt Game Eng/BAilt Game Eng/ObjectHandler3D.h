@@ -126,6 +126,7 @@ unsigned int ObjectHandler3D::CreateObject(std::string& fileName)
 	m_ModelContainer.back()->transform = *m_ObjContainer3d.back()->GetTransform();
 	m_ModelContainer.back()->materials[0].maps[MATERIAL_MAP_ALBEDO].texture = m_TexContainer[0];
 	GenMeshTangents(&m_ModelContainer.back()->meshes[0]);
+	//GenMeshBinormals(&m_ModelContainer.back()->meshes[0]);
 	m_ModelContainer.back()->materials[0].shader = m_GeometryPassShader;
 	
 	return m_ObjContainer3d.back()->GetIndex();

@@ -1,8 +1,10 @@
 #include "ScriptHandler.h"
 
-//Wont work in the .h for some fucking reason
 double* ScriptHandler::m_timeStep_ptr = NULL;
-std::string* ScriptHandler::m_fileDirectory_ptr = NULL;
+//std::string* ScriptHandler::m_baseDirectory_ptr = NULL;
+ConfigLoader* ScriptHandler::m_ConfigLoader_ptr = NULL;
+MasterGraphicsHandler* ScriptHandler::m_MasterGraphicsHandler_ptr = NULL;
+ObjectHandler3D* ScriptHandler::m_ObjHandler3D_ptr = NULL;
 
 std::vector<WrenHandle*> ScriptHandler::m_ModuleHandleContainer;
 std::vector<WrenHandle*> ScriptHandler::m_ClassHandleContainer;
@@ -56,7 +58,8 @@ void ScriptHandler::RunBootScript()
 	m_timeStep_ptr = m_localTimeSetp_ptr;
 	m_MasterGraphicsHandler_ptr = m_LocalMasterGraphicsHandler_ptr;
 	m_ObjHandler3D_ptr = m_LocalObjHandler3D_ptr;
-	m_fileDirectory_ptr = m_localFileDirectory_ptr;
+	//m_baseDirectory_ptr = m_LocalBaseDirectory_ptr;
+	m_ConfigLoader_ptr = m_LocalConfigLoader_ptr;
 
 	//Get a Handle for the OnUpdate() function as the first handle in the method container
 	//needs to be here instead of contructor to makes sure container doesnt go back to pNULL
@@ -83,7 +86,7 @@ void ScriptHandler::Update()
 
 bool ScriptHandler::LoadScript(std::string& ModuleName, std::string& FileName)
 {
-	std::string SourceFilePath = *m_fileDirectory_ptr;
+	std::string SourceFilePath = *m_ConfigLoader_ptr->GetBaseDirectory();
 	SourceFilePath.append(FileName);
 
 	char* scriptCode = LoadFileText(const_cast<char*>(SourceFilePath.c_str()));
@@ -147,7 +150,7 @@ WrenLoadModuleResult ScriptHandler::LoadModule(WrenVM* vm, const char* moduleFil
 {
 	WrenLoadModuleResult result = { NULL };
 
-	std::string ModuleFilePathSTR = *m_fileDirectory_ptr;
+	std::string ModuleFilePathSTR = *m_ConfigLoader_ptr->GetBaseDirectory();
 	ModuleFilePathSTR.append(moduleFileName);
 	ModuleFilePathSTR.append(".wren");
 	char* moduleFilePathsCharArr = const_cast<char*>(ModuleFilePathSTR.c_str());
@@ -484,7 +487,7 @@ void ScriptHandler::AddClassInstanceToContainer(WrenVM* vm)
 }
 void ScriptHandler::SetDirectory(WrenVM* vm)
 {
-	*m_fileDirectory_ptr = wrenGetSlotString(vm, 1);
+	*m_ConfigLoader_ptr->GetBaseDirectory() = wrenGetSlotString(vm, 1);
 }
 
 //math
@@ -758,7 +761,7 @@ void ScriptHandler::CreateObject3D(WrenVM* vm)
 	//create an object and return its Identifier
 	std::string fileName = wrenGetSlotString(vm, 1);
 
-	std::string directory = *m_fileDirectory_ptr;
+	std::string directory = *m_ConfigLoader_ptr->GetBaseDirectory();
 
 	directory.append(fileName);
 
@@ -1170,7 +1173,7 @@ void ScriptHandler::SetObject3DTexture(WrenVM* vm)
 	wrenEnsureSlots(vm, 4);
 
 	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
-	std::string textureFileName = *m_fileDirectory_ptr;
+	std::string textureFileName = *m_ConfigLoader_ptr->GetBaseDirectory();
 	textureFileName.append(wrenGetSlotString(vm, 2));
 	unsigned int materialIndex = (unsigned int)wrenGetSlotDouble(vm, 3);
 

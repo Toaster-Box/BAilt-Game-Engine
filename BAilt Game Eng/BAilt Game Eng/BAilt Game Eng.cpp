@@ -17,7 +17,7 @@ int main()
 {
 	std::string ConfigFilePath = "./config.txt";
 	std::string WindowName = "BAilt Engine";
-	std::string ScriptDirectory = "D:/";
+	std::string baseDirectory = "D:/";
 	std::string missingTexture = "D:/MissingTexture.png";
 
 	double previousTime = GetTime();
@@ -25,11 +25,11 @@ int main()
 
 	ConfigLoader MainConfigLoader(ConfigFilePath);
 
-	ObjectHandler2D MainObjHandler2D;
-	ObjectHandler3D MainObjHandler3D;
-	MasterGraphicsHandler MainMasterGraphicsHandler(&MainConfigLoader, &MainObjHandler2D, &MainObjHandler3D, WindowName);
+	static ObjectHandler2D MainObjHandler2D;
+	static ObjectHandler3D MainObjHandler3D;
+	static MasterGraphicsHandler MainMasterGraphicsHandler(&MainConfigLoader, &MainObjHandler2D, &MainObjHandler3D, WindowName);
 
-	ScriptHandler MainScriptHandler;
+	static ScriptHandler MainScriptHandler;
 
 
 
@@ -43,10 +43,11 @@ int main()
 	MainObjHandler3D.AddTextureToContainer(missingTexture);
 
 	//init Script Handler, will probably all be moved to constructor sometime. for now cutting down on constructor args
+	MainScriptHandler.SetConfigLoaderPTR(&MainConfigLoader);
 	MainScriptHandler.SetTimeStepPTR(timeStep_ptr);
 	MainScriptHandler.SetMasterGraphicsHandlerPTR(&MainMasterGraphicsHandler);
 	MainScriptHandler.SetObjHandler3DPTR(&MainObjHandler3D);
-	MainScriptHandler.SetScriptFileDirectory(&ScriptDirectory);
+	
 	MainScriptHandler.RunBootScript();
 
 	//Main update loop

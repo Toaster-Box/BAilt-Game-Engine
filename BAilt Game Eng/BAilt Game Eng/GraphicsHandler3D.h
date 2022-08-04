@@ -48,7 +48,7 @@ GraphicsHandler3D::GraphicsHandler3D(ObjectHandler3D* ObjHandler3DIn_ptr, Config
 
 	//Init buffers
 	m_GBuffer_ptr = new GBuffer(*m_ConfigLoader_ptr->GetConfigScreenWidth(), *m_ConfigLoader_ptr->GetConfigScreenHeight());
-	m_LBuffer_ptr = new LBuffer(m_GBuffer_ptr);
+	m_LBuffer_ptr = new LBuffer(m_ConfigLoader_ptr, m_GBuffer_ptr);
 
 	//Init Shader
 	m_GeometryPassShader = LoadShader("D:/GBufferShader.vs", "D:/GBufferShader.fs");

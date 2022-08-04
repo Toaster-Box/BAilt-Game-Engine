@@ -18,7 +18,7 @@ namespace
 
 		Vector3	GetCameraPosition() { return m_rayCamera.position; }
 		Vector3	GetCameraForward() { return m_forward; }
-		Vector3	GetCameraRight() { return (m_left); }
+		Vector3	GetCameraRight() { return Vector3Negate(m_left); }
 		Vector3	GetCameraUp() { return Vector3Negate(m_rayCamera.up); }
 		void SetCameraPosition(Vector3& posIn); 
 		void SetFOV(float fovIn) { m_rayCamera.fovy = fovIn; }

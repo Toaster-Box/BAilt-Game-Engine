@@ -6,7 +6,7 @@
 #include <string>
 #include <sstream>
 
-//#include "ConfigLoader.h"
+#include "ConfigLoader.h"
 #include "MasterGraphicsHandler.h"
 //#include "GraphicsHandler3D.h"
 //#include "GraphicsHandler2D.h"
@@ -37,7 +37,8 @@
 		void SetTimeStepPTR(double* timeStepIn_ptr) { m_localTimeSetp_ptr = timeStepIn_ptr; }
 		void SetMasterGraphicsHandlerPTR(MasterGraphicsHandler* MasterGraphicsHandlerIn_ptr) { m_LocalMasterGraphicsHandler_ptr = MasterGraphicsHandlerIn_ptr; }
 		void SetObjHandler3DPTR(ObjectHandler3D* ObjHandlerIn_ptr) { m_LocalObjHandler3D_ptr = ObjHandlerIn_ptr; }
-		void SetScriptFileDirectory(std::string* filePathIn_ptr) { m_localFileDirectory_ptr = filePathIn_ptr; }
+		//void SetBaseDirectory(std::string* dirIn) { m_LocalBaseDirectory_ptr = dirIn; }
+		void SetConfigLoaderPTR(ConfigLoader* confLoaderIn_ptr) { m_LocalConfigLoader_ptr = confLoaderIn_ptr; }
 
 	private:
 
@@ -114,18 +115,16 @@
 		double* m_localTimeSetp_ptr;
 		MasterGraphicsHandler* m_LocalMasterGraphicsHandler_ptr;
 		ObjectHandler3D* m_LocalObjHandler3D_ptr;
-		std::string* m_localFileDirectory_ptr;
+		//std::string* m_LocalBaseDirectory_ptr;
+		ConfigLoader* m_LocalConfigLoader_ptr;
 
 		static double* m_timeStep_ptr;
 		static MasterGraphicsHandler* m_MasterGraphicsHandler_ptr;
 		static ObjectHandler3D* m_ObjHandler3D_ptr;
-		static std::string* m_fileDirectory_ptr;
+		//static std::string* m_baseDirectory_ptr;
+		static ConfigLoader* m_ConfigLoader_ptr;
 
 		static std::vector<WrenHandle*> m_ModuleHandleContainer;
 		static std::vector<WrenHandle*> m_ClassHandleContainer;
 		static std::vector<WrenHandle*> m_MethodHandleContainer;
 	};
-
-//Wont work in the .cpp for some fucking reason
-MasterGraphicsHandler* ScriptHandler::m_MasterGraphicsHandler_ptr = NULL;
-ObjectHandler3D* ScriptHandler::m_ObjHandler3D_ptr = NULL;

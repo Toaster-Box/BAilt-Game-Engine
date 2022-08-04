@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 
+#include "ConfigLoader.h"
 #include "GBuffer.h"
 #include "CameraWrapper3D.h"
 
@@ -16,18 +17,18 @@ struct BaseLight
 	bool castsShadows = true;
 	bool emitsPhotons = true;
 	Vector3 color = {1.0f, 1.0f, 1.0f};
-	float ambientIntensity = 0.3;
-	float diffuseIntensity = 0.03f;
+	float ambientIntensity = 0.0;
+	float diffuseIntensity = 0.9f;
 };
 
 struct DirectionalLight : BaseLight
 {
-	Vector3 direction = { 0.5f, 0.0f, -1.0f };
+	Vector3 direction = { 0.25f, 0.0f, -1.0f };
 };
 
 struct PointLight : BaseLight
 {
-	Vector3 position = { 0.0f, 0.0f, 0.0f };
+	Vector3 position = { -3.0f, 4.0f, 0.0f };
 	float constantAtt = 0.5f;
 	float linearAtt = 0.0f;
 	float exponentioalAtt = 0.05f;
@@ -61,6 +62,8 @@ struct PointLightShader : BaseLightShader
 	int constantAttLoc;
 	int linearAttLoc;
 	int exponentialAttLoc;
+
+	int screenSizeLoc;
 };
 
 struct SpotLightShader : PointLightShader
@@ -85,7 +88,7 @@ struct LBufferData
 class LBuffer
 {
 public:
-	LBuffer(GBuffer* GBufferIn_ptr);
+	LBuffer(ConfigLoader* ConfigLoaderIn_ptr, GBuffer* GBufferIn_ptr);
 
 	void UpdateLBuffer(Camera3D& cameraIn);
 
@@ -103,6 +106,7 @@ private:
 	SpotLightShader m_SpotLightShader;
 
 	GBuffer* m_GBuffer_ptr;
+	ConfigLoader* m_ConfigLoader_ptr;
 
 	LBufferData m_LBufferData;
 
@@ -110,10 +114,8 @@ private:
 	std::vector<PointLight> m_PointLightContainer;
 	std::vector<SpotLight> m_SpotLightContainer;
 
-	Material m_pointlLightShaderMat;
-	Material m_spotLightShaderMat;
 
-	Model m_isosphereModel;
+	Model m_icosphereModel;
 	Model m_coneModel;
 	Model m_planeModel;
 
