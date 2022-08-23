@@ -92,34 +92,39 @@ LBuffer::LBuffer(ConfigLoader* ConfigLoaderIn_ptr, GBuffer* GBufferIn_ptr)
     m_PointLightShader.linearAttLoc = GetShaderLocation(m_PointLightShader.shader, "SampledPointLight.linearAtt");
     m_PointLightShader.exponentialAttLoc = GetShaderLocation(m_PointLightShader.shader, "SampledPointLight.exponentialAtt");
 
-    //m_SpotLightShader.shader = LoadShader(0, "D:/LBufferSpotShader.fs");
-    //m_SpotLightShader.shader.locs[SHADER_LOC_MAP_OCCLUSION] = GetShaderLocation(m_SpotLightShader.shader, "WorldPosTex"); //no default worldpos map so we use an empty non-cubemap
-    //m_SpotLightShader.shader.locs[SHADER_LOC_MAP_NORMAL] = GetShaderLocation(m_SpotLightShader.shader, "NormalTex");
-    //m_SpotLightShader.shader.locs[SHADER_LOC_MAP_ALBEDO] = GetShaderLocation(m_SpotLightShader.shader, "AlbedoTex");
-    //m_SpotLightShader.shader.locs[SHADER_LOC_MAP_METALNESS] = GetShaderLocation(m_SpotLightShader.shader, "MetalnessTex");
-    //m_SpotLightShader.shader.locs[SHADER_LOC_MAP_ROUGHNESS] = GetShaderLocation(m_SpotLightShader.shader, "RoughnessTex");
-    //m_SpotLightShader.shader.locs[SHADER_LOC_MAP_BRDF] = GetShaderLocation(m_SpotLightShader.shader, "DirectLightPassTex"); //once again using an empty tex map location
-    //m_SpotLightShader.screenSizeLoc = GetShaderLocation(m_SpotLightShader.shader, "ScreenSize");
-    //m_SpotLightShader.cameraPositionLoc = GetShaderLocation(m_SpotLightShader.shader, "CameraWorldPos");
-    //m_SpotLightShader.colorLoc = GetShaderLocation(m_SpotLightShader.shader, "SpotLight.Base.Base.color");
-    //m_SpotLightShader.ambientIntensityLoc = GetShaderLocation(m_SpotLightShader.shader, "SpotLight.Base.Base.ambientIntensity");
-    //m_SpotLightShader.diffuseIntensityLoc = GetShaderLocation(m_SpotLightShader.shader, "SpotLight.Base.Base.diffuseIntensity");
-    //m_SpotLightShader.positionLoc = GetShaderLocation(m_SpotLightShader.shader, "SpotLight.Base.position");
-    //m_SpotLightShader.constantAttLoc = GetShaderLocation(m_SpotLightShader.shader, "SpotLight.Base.constantAtt");
-    //m_SpotLightShader.linearAttLoc = GetShaderLocation(m_SpotLightShader.shader, "SpotLight.Base.linearAtt");
-    //m_SpotLightShader.exponentialAttLoc = GetShaderLocation(m_SpotLightShader.shader, "SpotLight.Base.exponentialAtt");
-    //m_SpotLightShader.directionLoc = GetShaderLocation(m_SpotLightShader.shader, "SpotLight.direction");
-    //m_SpotLightShader.cutOffAngleLoc = GetShaderLocation(m_SpotLightShader.shader, "SpotLight.cutoff");
-
-
-   // m_pointlLightShaderMat.shader = m_PointLightShader.shader;
-    //m_spotLightShaderMat.shader = m_SpotLightShader.shader;
+    m_SpotLightShader.shader = LoadShader("D:/LBufferShader.vs", "D:/LBufferSpotShader.fs");
+    m_SpotLightShader.shader.locs[SHADER_LOC_MAP_OCCLUSION] = GetShaderLocation(m_SpotLightShader.shader, "WorldPosTex"); //no default worldpos map so we use an empty non-cubemap
+    m_SpotLightShader.shader.locs[SHADER_LOC_MAP_NORMAL] = GetShaderLocation(m_SpotLightShader.shader, "NormalTex");
+    m_SpotLightShader.shader.locs[SHADER_LOC_MAP_ALBEDO] = GetShaderLocation(m_SpotLightShader.shader, "AlbedoTex");
+    m_SpotLightShader.shader.locs[SHADER_LOC_MAP_METALNESS] = GetShaderLocation(m_SpotLightShader.shader, "MetalnessTex");
+    m_SpotLightShader.shader.locs[SHADER_LOC_MAP_ROUGHNESS] = GetShaderLocation(m_SpotLightShader.shader, "RoughnessTex");
+    m_SpotLightShader.shader.locs[SHADER_LOC_MAP_BRDF] = GetShaderLocation(m_SpotLightShader.shader, "DirectLightPassTex"); //once again using an empty tex map location
+    m_SpotLightShader.screenSizeLoc = GetShaderLocation(m_SpotLightShader.shader, "ScreenSize");
+    m_SpotLightShader.cameraPositionLoc = GetShaderLocation(m_SpotLightShader.shader, "CameraWorldPos");
+    m_SpotLightShader.colorLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.Base.Base.color");
+    m_SpotLightShader.ambientIntensityLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.Base.Base.ambientIntensity");
+    m_SpotLightShader.diffuseIntensityLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.Base.Base.diffuseIntensity");
+    m_SpotLightShader.positionLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.Base.position");
+    m_SpotLightShader.constantAttLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.Base.constantAtt");
+    m_SpotLightShader.linearAttLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.Base.linearAtt");
+    m_SpotLightShader.exponentialAttLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.Base.exponentialAtt");
+    m_SpotLightShader.directionLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.direction");
+    m_SpotLightShader.cutOffAngleLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.cutoff");
 
     DirectionalLight testLight;
+    testLight.direction = { 0.25, 0.0f, -1.0f };
     m_DirectionalLightContainer.push_back(testLight);
 
     PointLight testLight2;
+    testLight2.color = {0.5f, 0.5f, 1.0f};
+    testLight2.position = { -3.0f, 4.0f, 0.0f };
     m_PointLightContainer.push_back(testLight2);
+
+    SpotLight testLight3;
+    testLight3.color = { 0.5f, 1.0f, 0.5f };
+    testLight3.position = { 3.0f,-4.0f, 0.0f };
+    testLight3.direction = { -0.5f, 0.5f, -1.0f };
+    m_SpotLightContainer.push_back(testLight3);
 
 
     float screenRatio = float(m_LBufferData.screenWidth) / float(m_LBufferData.screenHeight);
@@ -143,12 +148,10 @@ LBuffer::LBuffer(ConfigLoader* ConfigLoaderIn_ptr, GBuffer* GBufferIn_ptr)
     m_dirLightCam.LookAt(dir, up);
 
     std::string icoshpereFilename = *m_ConfigLoader_ptr->GetBaseDirectory();
-    std::string fileNameAppend = "Icoshpereinvertnormals.obj";
-    icoshpereFilename.append(fileNameAppend);
-    const char* fileNameCast = const_cast<char*>(icoshpereFilename.c_str());
-    m_icosphereModel = LoadModel(fileNameCast);
-
-    //m_icosphereModel = LoadModelFromMesh(tempMesh2);
+    std::string pFileNameAppend = "Icoshpereinvertnormals.obj";
+    icoshpereFilename.append(pFileNameAppend);
+    const char* pFileNameCast = const_cast<char*>(icoshpereFilename.c_str());
+    m_icosphereModel = LoadModel(pFileNameCast);
     
 
     m_icosphereModel.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = m_GBuffer_ptr->GetAlbedoTex();
@@ -158,6 +161,22 @@ LBuffer::LBuffer(ConfigLoader* ConfigLoaderIn_ptr, GBuffer* GBufferIn_ptr)
     m_icosphereModel.materials[0].maps[MATERIAL_MAP_ROUGHNESS].texture = m_GBuffer_ptr->GetRoughnessTex();
     m_icosphereModel.materials[0].maps[MATERIAL_MAP_BRDF].texture = m_LBufferData.DirectLighting;
     m_icosphereModel.materials[0].shader = m_PointLightShader.shader;
+
+    std::string coneFilename = *m_ConfigLoader_ptr->GetBaseDirectory();
+    std::string sFileNameAppend = "Coneinvertnormals.obj";
+    coneFilename.append(sFileNameAppend);
+    const char* sFileNameCast = const_cast<char*>(coneFilename.c_str());
+    m_coneModel = LoadModel(sFileNameCast);
+
+    m_coneTransformationMatrix = MatrixIdentity();
+
+    m_coneModel.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = m_GBuffer_ptr->GetAlbedoTex();
+    m_coneModel.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture = m_GBuffer_ptr->GetWorldPosTex();
+    m_coneModel.materials[0].maps[MATERIAL_MAP_NORMAL].texture = m_GBuffer_ptr->GetNormalTex();
+    m_coneModel.materials[0].maps[MATERIAL_MAP_METALNESS].texture = m_GBuffer_ptr->GetMetalnessTex();
+    m_coneModel.materials[0].maps[MATERIAL_MAP_ROUGHNESS].texture = m_GBuffer_ptr->GetRoughnessTex();
+    m_coneModel.materials[0].maps[MATERIAL_MAP_BRDF].texture = m_LBufferData.DirectLighting;
+    m_coneModel.materials[0].shader = m_SpotLightShader.shader;
 }     
 
 
@@ -189,11 +208,14 @@ void LBuffer::CalcDirectLighting(Camera3D& cameraIn)
     SetShaderValue(m_PointLightShader.shader, m_PointLightShader.cameraPositionLoc, camPos, RL_SHADER_UNIFORM_VEC3);
     SetShaderValue(m_PointLightShader.shader, m_PointLightShader.screenSizeLoc, screenSize, RL_SHADER_UNIFORM_VEC2);
 
+    SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.cameraPositionLoc, camPos, RL_SHADER_UNIFORM_VEC3);
+    SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.screenSizeLoc, screenSize, RL_SHADER_UNIFORM_VEC2);
+
     //SetShaderValueV(m_SpotLightShader.shader, m_SpotLightShader.cameraPositionLoc, &cameraIn.position, RL_SHADER_UNIFORM_VEC3, 3);
 
     // Begin directional lights
     BeginMode3D(*m_dirLightCam.GetCameraPTR());
-    rlDisableDepthTest();
+    //rlDisableDepthTest();
     rlDisableBackfaceCulling();
     Vector3 zeros = {0.0f, 0.0f, 0.0f};
     Vector3 planeScale = {-1.0f, 1.0f, 1.0f};
@@ -215,20 +237,19 @@ void LBuffer::CalcDirectLighting(Camera3D& cameraIn)
         DrawModelEx(m_planeModel, zeros, zeros, 0.0f, planeScale, WHITE);
     }
     rlEnableBackfaceCulling();
-    rlEnableDepthTest();
     EndMode3D();
     // End directional lights
 
     // Begin point and spot lights
     BeginMode3D(cameraIn);
+    rlDisableDepthTest();
     for (unsigned i = 0; i < m_PointLightContainer.size(); i++)
     {
         float pConstant[1] = { m_PointLightContainer[i].constantAtt };
         float pLinear[1] = { m_PointLightContainer[i].linearAtt };
         float pExponential[1] = { m_PointLightContainer[i].exponentioalAtt };
         float pDiffuseIntensity[1] = { m_PointLightContainer[i].diffuseIntensity };
-        float pLightRadius = (-pLinear[0] + std::sqrtf(pLinear[0] * pLinear[0] - 4.0f * pExponential[0] * (pConstant[0] - (256.0f / 5.0f) * pDiffuseIntensity[0]))) / (2 * pExponential[0]);
-
+        
         float pColor[3] = { m_PointLightContainer[i].color.x, m_PointLightContainer[i].color.y, m_PointLightContainer[i].color.z };
         float pPosition[3] = { m_PointLightContainer[i].position.x, m_PointLightContainer[i].position.y, m_PointLightContainer[i].position.z };
         float pAmbient[1] = { m_PointLightContainer[i].ambientIntensity };
@@ -242,14 +263,48 @@ void LBuffer::CalcDirectLighting(Camera3D& cameraIn)
         SetShaderValue(m_PointLightShader.shader, m_PointLightShader.linearAttLoc, pLinear, RL_SHADER_UNIFORM_FLOAT);
         SetShaderValue(m_PointLightShader.shader, m_PointLightShader.exponentialAttLoc, pExponential, RL_SHADER_UNIFORM_FLOAT);
 
-        DrawModel(m_icosphereModel, m_PointLightContainer[i].position, pLightRadius, WHITE);
+        float pLightRadius = (-pLinear[0] + std::sqrtf(pLinear[0] * pLinear[0] - 4.0f * pExponential[0] * (pConstant[0] - (256.0f / 5.0f) * pDiffuseIntensity[0]))) / (2 * pExponential[0]);
+        Vector3 pCorrectedPos = { -m_PointLightContainer[i].position.x, m_PointLightContainer[i].position.y, m_PointLightContainer[i].position.z};
+
+        DrawModel(m_icosphereModel, pCorrectedPos, pLightRadius, WHITE);
     }
 
     for (unsigned int i = 0; i < m_SpotLightContainer.size(); i++)
     {
+        float sConstant[1] = { m_SpotLightContainer[i].constantAtt };
+        float sLinear[1] = { m_SpotLightContainer[i].linearAtt };
+        float sExponential[1] = { m_SpotLightContainer[i].exponentioalAtt };
+        float sDiffuseIntensity[1] = { m_SpotLightContainer[i].diffuseIntensity };
+        float sCutOffAngle[1] = { m_SpotLightContainer[i].cutOffAngle };
+        
+        float sColor[3] = { m_SpotLightContainer[i].color.x, m_SpotLightContainer[i].color.y, m_SpotLightContainer[i].color.z };
+        float sPosition[3] = { m_SpotLightContainer[i].position.x, m_SpotLightContainer[i].position.y, m_SpotLightContainer[i].position.z };
+        float sDirection[3] = { m_SpotLightContainer[i].direction.x, m_SpotLightContainer[i].direction.y, m_SpotLightContainer[i].direction.z };
+        float sAmbient[1] = { m_SpotLightContainer[i].ambientIntensity };
 
+        SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.colorLoc, sColor, RL_SHADER_UNIFORM_VEC3);
+        SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.ambientIntensityLoc, sAmbient, RL_SHADER_UNIFORM_FLOAT);
+        SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.diffuseIntensityLoc, sDiffuseIntensity, RL_SHADER_UNIFORM_FLOAT);
+        SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.cutOffAngleLoc, sCutOffAngle, RL_SHADER_UNIFORM_FLOAT);
+        SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.positionLoc, sPosition, RL_SHADER_UNIFORM_VEC3);
+        SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.directionLoc, sDirection, RL_SHADER_UNIFORM_VEC3);
+
+        SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.constantAttLoc, sConstant, RL_SHADER_UNIFORM_FLOAT);
+        SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.linearAttLoc, sLinear, RL_SHADER_UNIFORM_FLOAT);
+        SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.exponentialAttLoc, sExponential, RL_SHADER_UNIFORM_FLOAT);
+        
+        float sLightDistance = (-sLinear[0] + std::sqrtf(sLinear[0] * sLinear[0] - 4.0f * sExponential[0] * (sConstant[0] - (256.0f / 5.0f) * sDiffuseIntensity[0]))) / (2 * sExponential[0]);
+        float sLightRadius = tanf(m_SpotLightContainer[i].cutOffAngle) * sLightDistance;
+        Vector3 sScale = { sLightRadius, sLightDistance, sLightRadius };
+        m_coneTransformation.SetPosition(m_SpotLightContainer[i].position);
+        m_coneTransformation.SetScale(sScale);
+        m_coneTransformation.LookAt(m_SpotLightContainer[i].direction, {0.0f, 0.0f, 1.0f});
+        m_coneTransformation.UpdateTransformation(&m_coneTransformationMatrix);
+        m_coneModel.transform = m_coneTransformationMatrix;
+
+        DrawModel(m_coneModel, zeros, 1.0f, WHITE);
     }
-
+    rlEnableDepthTest();
     EndMode3D();
     // End point and spot lights
 }

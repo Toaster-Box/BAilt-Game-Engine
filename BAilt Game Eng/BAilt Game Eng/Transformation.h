@@ -16,7 +16,9 @@ public:
 	~Transformation();
 
 	Vector3 GetPosition() { return m_position; }
-	void SetPosition(Vector3& PosIn) { m_position = PosIn; }
+	void SetPosition(Vector3& posIn) { m_position = posIn; }
+	Vector3 GetScale() { return m_scale; }
+	void SetScale(Vector3& scaleIn) { m_scale = scaleIn; }
 	Vector3 GetForward() { return m_forward; }
 	Vector3 GetRight() { return m_right; }
 	Vector3 GetUp() { return m_up; }

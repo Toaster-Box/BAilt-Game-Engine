@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "ConfigLoader.h"
+#include "Transformation.h"
 #include "GBuffer.h"
 #include "CameraWrapper3D.h"
 
@@ -18,17 +19,17 @@ struct BaseLight
 	bool emitsPhotons = true;
 	Vector3 color = {1.0f, 1.0f, 1.0f};
 	float ambientIntensity = 0.0;
-	float diffuseIntensity = 0.9f;
+	float diffuseIntensity = 1.0f;
 };
 
 struct DirectionalLight : BaseLight
 {
-	Vector3 direction = { 0.25f, 0.0f, -1.0f };
+	Vector3 direction = { 0.0f, 0.0f, -1.0f };
 };
 
 struct PointLight : BaseLight
 {
-	Vector3 position = { -3.0f, 4.0f, 0.0f };
+	Vector3 position = { 0.0f, 0.0f, 0.0f };
 	float constantAtt = 0.5f;
 	float linearAtt = 0.0f;
 	float exponentioalAtt = 0.05f;
@@ -114,10 +115,12 @@ private:
 	std::vector<PointLight> m_PointLightContainer;
 	std::vector<SpotLight> m_SpotLightContainer;
 
-
 	Model m_icosphereModel;
 	Model m_coneModel;
 	Model m_planeModel;
+
+	Transformation m_coneTransformation;
+	Matrix m_coneTransformationMatrix;
 
 	CameraWrapper3D m_dirLightCam;
 };

@@ -151,7 +151,7 @@ void Transformation::UpdateTransformation(Matrix* transformationMat_ptr)
 	Matrix T = MatrixTranslate(-m_position.x, m_position.y, m_position.z);
 	Matrix S = MatrixScale(m_scale.x, m_scale.y, m_scale.z);
 
-	Matrix TRS = MatrixMultiply(MatrixMultiply(R, T), S);
+	Matrix TRS = MatrixMultiply(MatrixMultiply(S, R), T);
 
 	*transformationMat_ptr = TRS;
 }

@@ -38,9 +38,9 @@
 		std::string m_baseDirectory = "D:/";
 
 		//Graphics config
-		int m_screenWidth = 1280;
-		int m_screenHeight = 720;
-		int m_targetFPS = 9999999;
+		int m_screenWidth = 2560;
+		int m_screenHeight = 1440;
+		int m_targetFPS = 60;
 
 		float m_CameraFOV = 75.0f;
 
