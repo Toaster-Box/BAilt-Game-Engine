@@ -38,7 +38,8 @@ struct PointLight : BaseLight
 struct SpotLight : PointLight
 {
 	Vector3 direction = { 0.0f, 0.0f, -1.0f };
-	float cutOffAngle = DEG2RAD * 45.0f;
+	float innerCutOffAngle = DEG2RAD * 45.0f;
+	float outerCutOffAngle = DEG2RAD * 50.0f;
 };
 
 // Shader data structures
@@ -70,7 +71,9 @@ struct PointLightShader : BaseLightShader
 struct SpotLightShader : PointLightShader
 {
 	int directionLoc;
-	int cutOffAngleLoc;
+	int innerCutOffAngleLoc;
+	int outerCutOffAngleLoc;
+	int epsilonAngleLoc;
 };
 
 // Buffer contents

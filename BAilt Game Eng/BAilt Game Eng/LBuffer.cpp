@@ -109,7 +109,9 @@ LBuffer::LBuffer(ConfigLoader* ConfigLoaderIn_ptr, GBuffer* GBufferIn_ptr)
     m_SpotLightShader.linearAttLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.Base.linearAtt");
     m_SpotLightShader.exponentialAttLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.Base.exponentialAtt");
     m_SpotLightShader.directionLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.direction");
-    m_SpotLightShader.cutOffAngleLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.cutoff");
+    m_SpotLightShader.innerCutOffAngleLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.cutOff");
+    m_SpotLightShader.outerCutOffAngleLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.outerCutOff");
+    m_SpotLightShader.epsilonAngleLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.epsilon");
 
     DirectionalLight testLight;
     testLight.direction = { 0.25, 0.0f, -1.0f };
@@ -124,6 +126,8 @@ LBuffer::LBuffer(ConfigLoader* ConfigLoaderIn_ptr, GBuffer* GBufferIn_ptr)
     testLight3.color = { 0.5f, 1.0f, 0.5f };
     testLight3.position = { 3.0f,-4.0f, 0.0f };
     testLight3.direction = { -0.5f, 0.5f, -1.0f };
+    testLight3.outerCutOffAngle = 45.0f * DEG2RAD;
+    testLight3.innerCutOffAngle = 35.0f * DEG2RAD;
     m_SpotLightContainer.push_back(testLight3);
 
 
@@ -275,7 +279,9 @@ void LBuffer::CalcDirectLighting(Camera3D& cameraIn)
         float sLinear[1] = { m_SpotLightContainer[i].linearAtt };
         float sExponential[1] = { m_SpotLightContainer[i].exponentioalAtt };
         float sDiffuseIntensity[1] = { m_SpotLightContainer[i].diffuseIntensity };
-        float sCutOffAngle[1] = { m_SpotLightContainer[i].cutOffAngle };
+        float sCutOffAngle[1] = { m_SpotLightContainer[i].innerCutOffAngle };
+        float sOuterCutOffAngle[1] = { cosf(m_SpotLightContainer[i].outerCutOffAngle) }; //only the cos is used so its precalced
+        float sEpsilon[1] = { cosf(m_SpotLightContainer[i].innerCutOffAngle) - cosf(m_SpotLightContainer[i].outerCutOffAngle) }; // precomputing this since its the same for every fs instance
         
         float sColor[3] = { m_SpotLightContainer[i].color.x, m_SpotLightContainer[i].color.y, m_SpotLightContainer[i].color.z };
         float sPosition[3] = { m_SpotLightContainer[i].position.x, m_SpotLightContainer[i].position.y, m_SpotLightContainer[i].position.z };
@@ -285,7 +291,9 @@ void LBuffer::CalcDirectLighting(Camera3D& cameraIn)
         SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.colorLoc, sColor, RL_SHADER_UNIFORM_VEC3);
         SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.ambientIntensityLoc, sAmbient, RL_SHADER_UNIFORM_FLOAT);
         SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.diffuseIntensityLoc, sDiffuseIntensity, RL_SHADER_UNIFORM_FLOAT);
-        SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.cutOffAngleLoc, sCutOffAngle, RL_SHADER_UNIFORM_FLOAT);
+        SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.innerCutOffAngleLoc, sCutOffAngle, RL_SHADER_UNIFORM_FLOAT);
+        SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.outerCutOffAngleLoc, sOuterCutOffAngle, RL_SHADER_UNIFORM_FLOAT);
+        SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.epsilonAngleLoc, sEpsilon, RL_SHADER_UNIFORM_FLOAT);
         SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.positionLoc, sPosition, RL_SHADER_UNIFORM_VEC3);
         SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.directionLoc, sDirection, RL_SHADER_UNIFORM_VEC3);
 
@@ -294,7 +302,7 @@ void LBuffer::CalcDirectLighting(Camera3D& cameraIn)
         SetShaderValue(m_SpotLightShader.shader, m_SpotLightShader.exponentialAttLoc, sExponential, RL_SHADER_UNIFORM_FLOAT);
         
         float sLightDistance = (-sLinear[0] + std::sqrtf(sLinear[0] * sLinear[0] - 4.0f * sExponential[0] * (sConstant[0] - (256.0f / 5.0f) * sDiffuseIntensity[0]))) / (2 * sExponential[0]);
-        float sLightRadius = tanf(m_SpotLightContainer[i].cutOffAngle) * sLightDistance;
+        float sLightRadius = tanf(m_SpotLightContainer[i].outerCutOffAngle) * sLightDistance;
         Vector3 sScale = { sLightRadius, sLightDistance, sLightRadius };
         m_coneTransformation.SetPosition(m_SpotLightContainer[i].position);
         m_coneTransformation.SetScale(sScale);
