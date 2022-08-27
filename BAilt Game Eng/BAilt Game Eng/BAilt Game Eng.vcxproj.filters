@@ -92,5 +92,8 @@
     <ClInclude Include="LBuffer.h">
       <Filter>Header Files\Graphics Headers</Filter>
     </ClInclude>
+    <ClInclude Include="LightsCommon.h">
+      <Filter>Header Files\Graphics Headers</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

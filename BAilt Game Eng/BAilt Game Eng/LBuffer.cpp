@@ -113,23 +113,6 @@ LBuffer::LBuffer(ConfigLoader* ConfigLoaderIn_ptr, GBuffer* GBufferIn_ptr)
     m_SpotLightShader.outerCutOffAngleLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.outerCutOff");
     m_SpotLightShader.epsilonAngleLoc = GetShaderLocation(m_SpotLightShader.shader, "SampledSpotLight.epsilon");
 
-    DirectionalLight testLight;
-    testLight.direction = { 0.25, 0.0f, -1.0f };
-    m_DirectionalLightContainer.push_back(testLight);
-
-    PointLight testLight2;
-    testLight2.color = {0.5f, 0.5f, 1.0f};
-    testLight2.position = { -3.0f, 4.0f, 0.0f };
-    m_PointLightContainer.push_back(testLight2);
-
-    SpotLight testLight3;
-    testLight3.color = { 0.5f, 1.0f, 0.5f };
-    testLight3.position = { 3.0f,-4.0f, 0.0f };
-    testLight3.direction = { -0.5f, 0.5f, -1.0f };
-    testLight3.outerCutOffAngle = 45.0f * DEG2RAD;
-    testLight3.innerCutOffAngle = 35.0f * DEG2RAD;
-    m_SpotLightContainer.push_back(testLight3);
-
 
     float screenRatio = float(m_LBufferData.screenWidth) / float(m_LBufferData.screenHeight);
     Mesh tempMesh = GenMeshPlane(screenRatio, 1.0f, 1, 1);
@@ -201,6 +184,7 @@ void LBuffer::UpdateLBuffer(Camera3D& cameraIn)
 
     BindForReading();
 }
+
 
 void LBuffer::CalcDirectLighting(Camera3D& cameraIn)
 {
@@ -350,4 +334,66 @@ void LBuffer::BindForReading()
     rlDrawRenderBatchActive();      // Update and draw internal render batch
 
     rlDisableFramebuffer();         // Disable render target (fbo)
+}
+
+unsigned int LBuffer::CreateDirectionalLight()
+{
+    DirectionalLight newDirLight; 
+    m_DirectionalLightContainer.push_back(newDirLight); 
+    return m_DirectionalLightContainer.size() - 1;
+}
+
+
+unsigned int LBuffer::CreatePointLight()
+{
+    PointLight newPointLight;
+    m_PointLightContainer.push_back(newPointLight);
+    return m_PointLightContainer.size() - 1;
+}
+
+
+unsigned int LBuffer::CreateSpotLight()
+{
+    SpotLight newSpotLight;
+    m_SpotLightContainer.push_back(newSpotLight);
+    return m_SpotLightContainer.size() - 1;
+}
+
+
+bool LBuffer::CheckDirectionalLightIndex(unsigned int index)
+{
+    if (index > m_DirectionalLightContainer.size() + 1)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+
+bool LBuffer::CheckPointLightIndex(unsigned int index)
+{
+    if (index > m_PointLightContainer.size() + 1)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+
+bool LBuffer::CheckSpotLightIndex(unsigned int index)
+{
+    if (index > m_SpotLightContainer.size() + 1)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }

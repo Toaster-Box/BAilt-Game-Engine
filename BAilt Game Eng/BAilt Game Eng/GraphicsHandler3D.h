@@ -16,6 +16,7 @@ namespace
 		GraphicsHandler3D(ObjectHandler3D* ObjHandler3DIn_ptr, ConfigLoader* ConfigLoaderIn_ptr);
 
 		CameraWrapper3D* GetCameraWrapperPTR() { return &m_SceneCamera; }
+		LBuffer* GetLBufferPTR() { return m_LBuffer_ptr; }
 
 		void GeometryPass();
 		void LightPass();

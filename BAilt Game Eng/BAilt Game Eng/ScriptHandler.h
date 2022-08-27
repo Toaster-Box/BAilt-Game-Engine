@@ -90,6 +90,16 @@
 		static void Camera3DLookAt(WrenVM* vm);
 		static void Camera3DLookAtPos(WrenVM* vm);
 		static void Camera3DSetFOV(WrenVM* vm);
+		//Lighting3D fns
+		static void CreateDirectionalLight3D(WrenVM* vm);
+		static void CreatePointLight3D(WrenVM* vm);
+		static void CreateSpotLight3D(WrenVM* vm);
+		static void SetLight3DVector(WrenVM* vm);
+		static void GetLight3DVector(WrenVM* vm);
+		static void SetLight3DFloat(WrenVM* vm);
+		static void GetLight3DFloat(WrenVM* vm);
+		static void SetLight3DBool(WrenVM* vm);
+		static void GetLight3DBool(WrenVM* vm);
 		//ObjectHandler3D fns
 		static void CreateObject3D(WrenVM* vm);
 		//BaseObject3D fns

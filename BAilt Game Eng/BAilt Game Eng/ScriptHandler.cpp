@@ -180,7 +180,7 @@ WrenForeignClassMethods ScriptHandler::BindForeignClass(WrenVM* vm, const char* 
 WrenForeignMethodFn ScriptHandler::BindForeignMethod(WrenVM* vm, const char* moduleName, const char* className, bool isStatic, const char* signature)
 {
 	//Module isnt compared since we don't care want to restrict access to these functions based on module name
-
+	//should optimize the order according to most used
 	if (strcmp(className, "Utility") == 0)
 	{
 		//All Utility functions are nested in this Statement
@@ -339,6 +339,47 @@ WrenForeignMethodFn ScriptHandler::BindForeignMethod(WrenVM* vm, const char* mod
 		else if (isStatic && strcmp(signature, "Camera3DSetFOV(_)") == 0)
 		{
 			return Camera3DSetFOV;
+		}
+	}
+	else if (strcmp(className, "Lights3D") == 0)
+	{
+	//All 3D lighting functions are nested in this Statement
+
+		if (isStatic && strcmp(signature, "SetLight3DVector(_,_,_,_)") == 0)
+		{
+			return SetLight3DVector;
+		}
+		else if (isStatic && strcmp(signature, "GetLight3DVector(_,_,_)") == 0)
+		{
+			return GetLight3DVector;
+		}
+		else if (isStatic && strcmp(signature, "SetLight3DFloat(_,_,_,_)") == 0)
+		{
+			return SetLight3DFloat;
+		}
+		else if (isStatic && strcmp(signature, "GetLight3DFloat(_,_,_)") == 0)
+		{
+			return GetLight3DFloat;
+		}
+		else if (isStatic && strcmp(signature, "SetLight3DBool(_,_,_,_)") == 0)
+		{
+			return SetLight3DBool;
+		}
+		else if (isStatic && strcmp(signature, "GetLight3DBool(_,_,_)") == 0)
+		{
+			return GetLight3DBool;
+		}
+		else if (isStatic && strcmp(signature, "CreateDirectionalLight3D()") == 0)
+		{
+			return CreateDirectionalLight3D;
+		}
+		else if (isStatic && strcmp(signature, "CreatePointLight3D()") == 0)
+		{
+			return CreatePointLight3D;
+		}
+		else if (isStatic && strcmp(signature, "CreateSpotLight3D()") == 0)
+		{
+			return CreateSpotLight3D;
 		}
 	}
 	else if (strcmp(className, "ObjectHandler3D") == 0)
@@ -755,6 +796,651 @@ void ScriptHandler::Camera3DSetFOV(WrenVM* vm)
 	m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetCameraWrapperPTR()->SetFOV(angle);
 }
 
+//Lighting fns
+void ScriptHandler::CreateDirectionalLight3D(WrenVM* vm)
+{
+	unsigned int createdObjIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CreateDirectionalLight();
+
+	wrenSetSlotDouble(vm, 0, createdObjIndex);
+}
+void ScriptHandler::CreatePointLight3D(WrenVM* vm)
+{
+	unsigned int createdObjIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CreatePointLight();
+
+	wrenSetSlotDouble(vm, 0, createdObjIndex);
+}
+void ScriptHandler::CreateSpotLight3D(WrenVM* vm)
+{
+	unsigned int createdObjIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CreateSpotLight();
+
+	wrenSetSlotDouble(vm, 0, createdObjIndex);
+}
+void ScriptHandler::SetLight3DVector(WrenVM* vm)
+{
+	//need slots 0-5
+	// 0 - empty return
+	// 1 - vector type index
+	// 2 - light type 0 - directional, 1 - point, 2 - spot
+	// 3 - light object container index
+	// 4 - list 
+	// 5 - list x
+	// 6 - list y
+	// 7 - list z
+	wrenEnsureSlots(vm, 8);
+	
+	unsigned int vecIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
+	unsigned int lightType = (unsigned int)wrenGetSlotDouble(vm, 2);
+	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 3);
+
+	wrenGetListElement(vm, 4, 0, 5);
+	wrenGetListElement(vm, 4, 1, 6);
+	wrenGetListElement(vm, 4, 2, 7);
+
+	Vector3 inputVec;
+	inputVec.x = wrenGetSlotDouble(vm, 5);
+	inputVec.y = wrenGetSlotDouble(vm, 6);
+	inputVec.z = wrenGetSlotDouble(vm, 7);
+
+	//vector indicies
+	// 0 - color
+	// 1 - direction
+	// 2 - position
+
+	bool validIndex = false;
+	if (lightType == 0) // Directional light
+	{
+		DirectionalLight* dirLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckDirectionalLightIndex(objIndex);
+		if (validIndex)
+		{
+			dirLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetDirectionalLightPTR(objIndex);
+			if (vecIndex == 0) // color
+			{
+				dirLight_ptr->color = inputVec;
+			}
+			else if (vecIndex == 1) // direction
+			{
+				dirLight_ptr->direction = inputVec;
+			}
+		}
+	}
+	else if (lightType == 1) // Point Light
+	{ 
+		PointLight* pntLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckPointLightIndex(objIndex);
+		if (validIndex)
+		{
+			pntLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetPointLightPTR(objIndex);
+			if (vecIndex == 0) // color
+			{
+				pntLight_ptr->color = inputVec;
+			}
+			else if (vecIndex == 2) // position
+			{
+				pntLight_ptr->position = inputVec;
+			}
+		}
+	}
+	else if (lightType == 2) // Spot Light
+	{
+		SpotLight* sptLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckSpotLightIndex(objIndex);
+		if (validIndex)
+		{
+			sptLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetSpotLightPTR(objIndex);
+			if (vecIndex == 0) // color
+			{
+				sptLight_ptr->color = inputVec;
+			}
+			else if (vecIndex == 1) // direction
+			{
+				sptLight_ptr->direction = inputVec;
+			}
+			else if (vecIndex == 2) // positon
+			{
+				sptLight_ptr->position = inputVec;
+			}
+		}
+	}
+	else
+	{
+		//some catch function here maybe...
+	}
+}
+void ScriptHandler::GetLight3DVector(WrenVM* vm)
+{
+	//need slots 0-5
+	// 0 - return vector
+	// 1 - vector type index
+	// 2 - light type 0 - directional, 1 - point, 2 - spot
+	// 3 - light object container index
+	// 4 - output x
+	// 5 - output y
+	// 6 - output z
+	wrenEnsureSlots(vm, 7);
+
+	unsigned int vecIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
+	unsigned int lightType = (unsigned int)wrenGetSlotDouble(vm, 2);
+	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 3);
+
+	Vector3 outputVec = {0.0f, 0.0f, 0.0f};
+
+	//vector indicies
+	// 0 - color
+	// 1 - direction
+	// 2 - position
+
+	bool validIndex = false;
+	if (lightType == 0) // Directional light
+	{
+		DirectionalLight* dirLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckDirectionalLightIndex(objIndex);
+		if (validIndex)
+		{
+			dirLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetDirectionalLightPTR(objIndex);
+			if (vecIndex == 0) // color
+			{
+				outputVec = dirLight_ptr->color;
+			}
+			else if (vecIndex == 1) // direction
+			{
+				outputVec = dirLight_ptr->direction;
+			}
+		}
+	}
+	else if (lightType == 1) // Point Light
+	{
+		PointLight* pntLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckPointLightIndex(objIndex);
+		if (validIndex)
+		{
+			pntLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetPointLightPTR(objIndex);
+			if (vecIndex == 0) // color
+			{
+				outputVec = pntLight_ptr->color;
+			}
+			else if (vecIndex == 2) // position
+			{
+				outputVec = pntLight_ptr->position;
+			}
+		}
+	}
+	else if (lightType == 2) // Spot Light
+	{
+		SpotLight* sptLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckSpotLightIndex(objIndex);
+		if (validIndex)
+		{
+			sptLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetSpotLightPTR(objIndex);
+			if (vecIndex == 0) // color
+			{
+				outputVec = sptLight_ptr->color;
+			}
+			else if (vecIndex == 1) // direction
+			{
+				outputVec = sptLight_ptr->direction;
+			}
+			else if (vecIndex == 2) // positon
+			{
+				outputVec = sptLight_ptr->position;
+			}
+		}
+	}
+	else
+	{
+		//some catch function here maybe...
+	}
+
+	//return vect as a list in slot 0
+	wrenSetSlotNewList(vm, 0);
+
+	wrenSetSlotDouble(vm, 4, outputVec.x);
+	wrenSetSlotDouble(vm, 5, outputVec.y);
+	wrenSetSlotDouble(vm, 6, outputVec.z);
+
+	wrenInsertInList(vm, 0, 0, 4);
+	wrenInsertInList(vm, 0, 1, 5);
+	wrenInsertInList(vm, 0, 2, 6);
+}
+void ScriptHandler::SetLight3DFloat(WrenVM* vm)
+{
+	//need slots 0-5
+	// 0 - empty return
+	// 1 - float type index
+	// 2 - light type 0 - directional, 1 - point, 2 - spot
+	// 3 - light object container index
+	// 4 - float value 
+	wrenEnsureSlots(vm, 5);
+
+	unsigned int floatIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
+	unsigned int lightType = (unsigned int)wrenGetSlotDouble(vm, 2);
+	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 3);
+
+	float inputfl = wrenGetSlotDouble(vm, 4);
+
+	//float indicies
+	// 0 - diffuse intensity
+	// 1 - ambient intensity
+	// 2 - constant attenuation
+	// 3 - linear attenuation
+	// 4 - exponential attenuation
+	// 5 - inner cutoff angle
+	// 6 - outer cutoff angle
+
+	bool validIndex = false;
+	if (lightType == 0) // Directional light
+	{
+		DirectionalLight* dirLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckDirectionalLightIndex(objIndex);
+		if (validIndex)
+		{
+			dirLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetDirectionalLightPTR(objIndex);
+			if (floatIndex == 0) // diffuse intensity
+			{
+				dirLight_ptr->diffuseIntensity = inputfl;
+			}
+			else if (floatIndex == 1) // ambient intensity
+			{
+				dirLight_ptr->ambientIntensity	 = inputfl;
+			}
+		}
+	}
+	else if (lightType == 1) // Point Light
+	{
+		PointLight* pntLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckPointLightIndex(objIndex);
+		if (validIndex)
+		{
+			pntLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetPointLightPTR(objIndex);
+			if (floatIndex == 0) // diffuse intensity
+			{
+				pntLight_ptr->diffuseIntensity = inputfl;
+			}
+			else if (floatIndex == 1) // ambient intensity
+			{
+				pntLight_ptr->ambientIntensity = inputfl;
+			}
+			else if (floatIndex == 2) // constant attenuation
+			{
+				pntLight_ptr->constantAtt = inputfl;
+			}
+			else if (floatIndex == 3) // linear attenuation
+			{
+				pntLight_ptr->linearAtt = inputfl;
+			}
+			else if (floatIndex == 4) // exponential attenuation
+			{
+				pntLight_ptr->exponentioalAtt = inputfl;
+			}
+		}
+	}
+	else if (lightType == 2) // Spot Light
+	{
+		SpotLight* sptLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckSpotLightIndex(objIndex);
+		if (validIndex)
+		{
+			sptLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetSpotLightPTR(objIndex);
+			if (floatIndex == 0) // diffuse intensity
+			{
+				sptLight_ptr->diffuseIntensity = inputfl;
+			}
+			else if (floatIndex == 1) // ambient intensity
+			{
+				sptLight_ptr->ambientIntensity = inputfl;
+			}
+			else if (floatIndex == 2) // constant attenuation
+			{
+				sptLight_ptr->constantAtt = inputfl;
+			}
+			else if (floatIndex == 3) // linear attenuation
+			{
+				sptLight_ptr->linearAtt = inputfl;
+			}
+			else if (floatIndex == 4) // exponential attenuation
+			{
+				sptLight_ptr->exponentioalAtt = inputfl;
+			}
+			else if (floatIndex == 5) // inner cutoff angle
+			{
+				sptLight_ptr->innerCutOffAngle = inputfl;
+			}
+			else if (floatIndex == 6) // outer cutoff angle
+			{
+				sptLight_ptr->outerCutOffAngle = inputfl;
+			}
+		}
+	}
+	else
+	{
+		//some catch function here maybe...
+	}
+}
+void ScriptHandler::GetLight3DFloat(WrenVM* vm)
+{
+	//need slots 0-5
+	// 0 - return float
+	// 1 - float type index
+	// 2 - light type 0 - directional, 1 - point, 2 - spot
+	// 3 - light object container index
+	wrenEnsureSlots(vm, 4);
+
+	unsigned int floatIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
+	unsigned int lightType = (unsigned int)wrenGetSlotDouble(vm, 2);
+	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 3);
+
+	float outputfl = 0.0f;
+
+	//float indicies
+	// 0 - diffuse intensity
+	// 1 - ambient intensity
+	// 2 - constant attenuation
+	// 3 - linear attenuation
+	// 4 - exponential attenuation
+	// 5 - inner cutoff angle
+	// 6 - outer cutoff angle
+
+	bool validIndex = false;
+	if (lightType == 0) // Directional light
+	{
+		DirectionalLight* dirLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckDirectionalLightIndex(objIndex);
+		if (validIndex)
+		{
+			dirLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetDirectionalLightPTR(objIndex);
+			if (floatIndex == 0) // diffuse intensity
+			{
+				outputfl = dirLight_ptr->diffuseIntensity;
+			}
+			else if (floatIndex == 1) // ambient intensity
+			{
+				outputfl = dirLight_ptr->ambientIntensity;
+			}
+		}
+	}
+	else if (lightType == 1) // Point Light
+	{
+		PointLight* pntLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckPointLightIndex(objIndex);
+		if (validIndex)
+		{
+			pntLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetPointLightPTR(objIndex);
+			if (floatIndex == 0) // diffuse intensity
+			{
+				outputfl = pntLight_ptr->diffuseIntensity;
+			}
+			else if (floatIndex == 1) // ambient intensity
+			{
+				outputfl = pntLight_ptr->ambientIntensity;
+			}
+			else if (floatIndex == 2) // constant attenuation
+			{
+				outputfl = pntLight_ptr->constantAtt;
+			}
+			else if (floatIndex == 3) // linear attenuation
+			{
+				outputfl = pntLight_ptr->linearAtt;
+			}
+			else if (floatIndex == 4) // exponential attenuation
+			{
+				outputfl = pntLight_ptr->exponentioalAtt;
+			}
+		}
+	}
+	else if (lightType == 2) // Spot Light
+	{
+		SpotLight* sptLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckSpotLightIndex(objIndex);
+		if (validIndex)
+		{
+			sptLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetSpotLightPTR(objIndex);
+			if (floatIndex == 0) // diffuse intensity
+			{
+				outputfl = sptLight_ptr->diffuseIntensity;
+			}
+			else if (floatIndex == 1) // ambient intensity
+			{
+				outputfl = sptLight_ptr->ambientIntensity;
+			}
+			else if (floatIndex == 2) // constant attenuation
+			{
+				outputfl = sptLight_ptr->constantAtt;
+			}
+			else if (floatIndex == 3) // linear attenuation
+			{
+				outputfl = sptLight_ptr->linearAtt;
+			}
+			else if (floatIndex == 4) // exponential attenuation
+			{
+				outputfl = sptLight_ptr->exponentioalAtt;
+			}
+			else if (floatIndex == 5) // inner cutoff angle
+			{
+				outputfl = sptLight_ptr->innerCutOffAngle;
+			}
+			else if (floatIndex == 6) // outer cutoff angle
+			{
+				outputfl = sptLight_ptr->outerCutOffAngle;
+			}
+		}
+	}
+	else
+	{
+		//some catch function here maybe...
+	}
+
+	//return output
+	wrenSetSlotDouble(vm, 0, outputfl);
+}
+void ScriptHandler::SetLight3DBool(WrenVM* vm)
+{
+	//need slots 0-5
+	// 0 - empty return
+	// 1 - float type index
+	// 2 - light type 0 - directional, 1 - point, 2 - spot
+	// 3 - light object container index
+	// 4 - bool value 
+	wrenEnsureSlots(vm, 5);
+
+	unsigned int floatIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
+	unsigned int lightType = (unsigned int)wrenGetSlotDouble(vm, 2);
+	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 3);
+
+	bool inputbl = wrenGetSlotBool(vm, 4);
+
+	//float indicies
+	// 0 - casts shadows
+	// 1 - uses dynamic shadow update algorithm 
+	// 2 - emits photons
+	// 3 - is volumeteric
+
+	bool validIndex = false;
+	if (lightType == 0) // Directional light
+	{
+		DirectionalLight* dirLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckDirectionalLightIndex(objIndex);
+		if (validIndex)
+		{
+			dirLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetDirectionalLightPTR(objIndex);
+			if (floatIndex == 0) // casts shadows
+			{
+				dirLight_ptr->castsShadows = inputbl;
+			}
+			else if (floatIndex == 1) // uses dynamic shadow update algorithm 
+			{
+				dirLight_ptr->dynamicShadowUpdate = inputbl;
+			}
+			else if (floatIndex == 2) // emits photons
+			{
+				dirLight_ptr->emitsPhotons = inputbl;
+			}
+			else if (floatIndex == 3) // is volumeteric
+			{
+				dirLight_ptr->volumeteric = inputbl;
+			}
+		}
+	}
+	else if (lightType == 1) // Point Light
+	{
+		PointLight* pntLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckPointLightIndex(objIndex);
+		if (validIndex)
+		{
+			pntLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetPointLightPTR(objIndex);
+			if (floatIndex == 0) // casts shadows
+			{
+				pntLight_ptr->castsShadows = inputbl;
+			}
+			else if (floatIndex == 1) // uses dynamic shadow update algorithm 
+			{
+				pntLight_ptr->dynamicShadowUpdate = inputbl;
+			}
+			else if (floatIndex == 2) // emits photons
+			{
+				pntLight_ptr->emitsPhotons = inputbl;
+			}
+			else if (floatIndex == 3) // is volumeteric
+			{
+				pntLight_ptr->volumeteric = inputbl;
+			}
+		}
+	}
+	else if (lightType == 2) // Spot Light
+	{
+		SpotLight* sptLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckSpotLightIndex(objIndex);
+		if (validIndex)
+		{
+			sptLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetSpotLightPTR(objIndex);
+			if (floatIndex == 0) // casts shadows
+			{
+				sptLight_ptr->castsShadows = inputbl;
+			}
+			else if (floatIndex == 1) // uses dynamic shadow update algorithm 
+			{
+				sptLight_ptr->dynamicShadowUpdate = inputbl;
+			}
+			else if (floatIndex == 2) // emits photons
+			{
+				sptLight_ptr->emitsPhotons = inputbl;
+			}
+			else if (floatIndex == 3) // is volumeteric
+			{
+				sptLight_ptr->volumeteric = inputbl;
+			}
+		}
+	}
+	else
+	{
+		//some catch function here maybe...
+	}
+}
+void ScriptHandler::GetLight3DBool(WrenVM* vm)
+{
+	//need slots 0-5
+	// 0 - return bool
+	// 1 - float type index
+	// 2 - light type 0 - directional, 1 - point, 2 - spot
+	// 3 - light object container index 
+	wrenEnsureSlots(vm, 4);
+
+	unsigned int floatIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
+	unsigned int lightType = (unsigned int)wrenGetSlotDouble(vm, 2);
+	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 3);
+
+	bool outputbl = false; // unfortunately and assumption needs to go here
+
+	//float indicies
+	// 0 - casts shadows
+	// 1 - uses dynamic shadow update algorithm 
+	// 2 - emits photons
+	// 3 - is volumeteric
+
+	bool validIndex = false;
+	if (lightType == 0) // Directional light
+	{
+		DirectionalLight* dirLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckDirectionalLightIndex(objIndex);
+		if (validIndex)
+		{
+			dirLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetDirectionalLightPTR(objIndex);
+			if (floatIndex == 0) // casts shadows
+			{
+				outputbl = dirLight_ptr->castsShadows;
+			}
+			else if (floatIndex == 1) // uses dynamic shadow update algorithm 
+			{
+				outputbl = dirLight_ptr->dynamicShadowUpdate;
+			}
+			else if (floatIndex == 2) // emits photons
+			{
+				outputbl = dirLight_ptr->emitsPhotons;
+			}
+			else if (floatIndex == 3) // is volumeteric
+			{
+				outputbl = dirLight_ptr->volumeteric;
+			}
+		}
+	}
+	else if (lightType == 1) // Point Light
+	{
+		PointLight* pntLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckPointLightIndex(objIndex);
+		if (validIndex)
+		{
+			pntLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetPointLightPTR(objIndex);
+			if (floatIndex == 0) // casts shadows
+			{
+				outputbl = pntLight_ptr->castsShadows;
+			}
+			else if (floatIndex == 1) // uses dynamic shadow update algorithm 
+			{
+				outputbl = pntLight_ptr->dynamicShadowUpdate;
+			}
+			else if (floatIndex == 2) // emits photons
+			{
+				outputbl = pntLight_ptr->emitsPhotons;
+			}
+			else if (floatIndex == 3) // is volumeteric
+			{
+				outputbl = pntLight_ptr->volumeteric;
+			}
+		}
+	}
+	else if (lightType == 2) // Spot Light
+	{
+		SpotLight* sptLight_ptr = NULL;
+		validIndex = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->CheckSpotLightIndex(objIndex);
+		if (validIndex)
+		{
+			sptLight_ptr = m_MasterGraphicsHandler_ptr->GetGraphicsHandler3DPTR()->GetLBufferPTR()->GetSpotLightPTR(objIndex);
+			if (floatIndex == 0) // casts shadows
+			{
+				outputbl = sptLight_ptr->castsShadows;
+			}
+			else if (floatIndex == 1) // uses dynamic shadow update algorithm 
+			{
+				outputbl = sptLight_ptr->dynamicShadowUpdate;
+			}
+			else if (floatIndex == 2) // emits photons
+			{
+				outputbl = sptLight_ptr->emitsPhotons;
+			}
+			else if (floatIndex == 3) // is volumeteric
+			{
+				outputbl = sptLight_ptr->volumeteric;
+			}
+		}
+	}
+	else
+	{
+		//some catch function here maybe...
+	}
+
+	//return output
+	wrenSetSlotBool(vm, 0, outputbl);
+}
+
 //ObjectHandler3D
 void ScriptHandler::CreateObject3D(WrenVM* vm)
 {
@@ -773,6 +1459,9 @@ void ScriptHandler::CreateObject3D(WrenVM* vm)
 //BaseObject3D
 void ScriptHandler::GetObject3DPosition(WrenVM* vm)
 {
+	//Ensure slots since we are using a lot of them, 5 for indicies 0-4
+	wrenEnsureSlots(vm, 5);
+
 	unsigned int objIndex = (unsigned int)wrenGetSlotDouble(vm, 1);
 
 	BaseObject3D* obj_ptr = NULL;
@@ -794,10 +1483,7 @@ void ScriptHandler::GetObject3DPosition(WrenVM* vm)
 		Position.z = 0;
 	}
 
-	//Ensure slots since we are using a lot of them, 5 for indicies 0-4
-	wrenEnsureSlots(vm, 5);
-
-	//return vecot as a list in slot 0
+	//return vect as a list in slot 0
 	wrenSetSlotNewList(vm, 0);
 
 	wrenSetSlotDouble(vm, 2, Position.x);
@@ -1177,7 +1863,16 @@ void ScriptHandler::SetObject3DTexture(WrenVM* vm)
 	textureFileName.append(wrenGetSlotString(vm, 2));
 	unsigned int materialIndex = (unsigned int)wrenGetSlotDouble(vm, 3);
 
-	BaseObject3D* obj_ptr = m_ObjHandler3D_ptr->GetObjectPTR(objIndex);
-	unsigned int textureIndex = m_ObjHandler3D_ptr->AddTextureToContainer(textureFileName);
-	m_ObjHandler3D_ptr->SetObjectTexture(obj_ptr, textureIndex, materialIndex);
+	BaseObject3D* obj_ptr = NULL;
+	obj_ptr = m_ObjHandler3D_ptr->GetObjectPTR(objIndex);
+
+	if (obj_ptr != NULL)
+	{
+		unsigned int textureIndex = m_ObjHandler3D_ptr->AddTextureToContainer(textureFileName);
+		m_ObjHandler3D_ptr->SetObjectTexture(obj_ptr, textureIndex, materialIndex);
+	}
+	else
+	{
+		std::cout << "Error setting object texture" << std::endl;
+	}
 }

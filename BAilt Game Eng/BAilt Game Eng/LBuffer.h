@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 
+#include "LightsCommon.h"
 #include "ConfigLoader.h"
 #include "Transformation.h"
 #include "GBuffer.h"
@@ -11,36 +12,6 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "rlgl.h"
-
-// Light Data Structures
-struct BaseLight
-{
-	bool castsShadows = true;
-	bool emitsPhotons = true;
-	Vector3 color = {1.0f, 1.0f, 1.0f};
-	float ambientIntensity = 0.0;
-	float diffuseIntensity = 1.0f;
-};
-
-struct DirectionalLight : BaseLight
-{
-	Vector3 direction = { 0.0f, 0.0f, -1.0f };
-};
-
-struct PointLight : BaseLight
-{
-	Vector3 position = { 0.0f, 0.0f, 0.0f };
-	float constantAtt = 0.5f;
-	float linearAtt = 0.0f;
-	float exponentioalAtt = 0.05f;
-};
-
-struct SpotLight : PointLight
-{
-	Vector3 direction = { 0.0f, 0.0f, -1.0f };
-	float innerCutOffAngle = DEG2RAD * 45.0f;
-	float outerCutOffAngle = DEG2RAD * 50.0f;
-};
 
 // Shader data structures
 struct BaseLightShader
@@ -95,6 +66,20 @@ public:
 	LBuffer(ConfigLoader* ConfigLoaderIn_ptr, GBuffer* GBufferIn_ptr);
 
 	void UpdateLBuffer(Camera3D& cameraIn);
+
+	unsigned int CreateDirectionalLight();
+	DirectionalLight* GetDirectionalLightPTR(unsigned int index) { return &m_DirectionalLightContainer[index]; }
+	
+	unsigned int CreatePointLight();
+	PointLight* GetPointLightPTR(unsigned int index) { return &m_PointLightContainer[index]; }
+
+	unsigned int CreateSpotLight(); 
+	SpotLight* GetSpotLightPTR(unsigned int index) { return &m_SpotLightContainer[index]; }
+
+
+	bool CheckDirectionalLightIndex(unsigned int index);
+	bool CheckPointLightIndex(unsigned int index);
+	bool CheckSpotLightIndex(unsigned int index);
 
 	Texture GetFinalIlluminationBuffer() { return m_LBufferData.DirectLighting; }
 

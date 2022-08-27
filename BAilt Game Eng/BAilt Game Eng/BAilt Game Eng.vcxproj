@@ -149,6 +149,7 @@
     <ClInclude Include="GraphicsHandler2D.h" />
     <ClInclude Include="GraphicsHandler3D.h" />
     <ClInclude Include="LBuffer.h" />
+    <ClInclude Include="LightsCommon.h" />
     <ClInclude Include="MasterGraphicsHandler.h" />
     <ClInclude Include="ObjectHandler2D.h" />
     <ClInclude Include="ObjectHandler3D.h" />
