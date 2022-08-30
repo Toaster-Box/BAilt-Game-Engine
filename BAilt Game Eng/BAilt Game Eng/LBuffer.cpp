@@ -235,7 +235,7 @@ void LBuffer::CalcDirectLighting(Camera3D& cameraIn)
     {
         float pConstant[1] = { m_PointLightContainer[i].constantAtt };
         float pLinear[1] = { m_PointLightContainer[i].linearAtt };
-        float pExponential[1] = { m_PointLightContainer[i].exponentioalAtt };
+        float pExponential[1] = { m_PointLightContainer[i].exponentialAtt };
         float pDiffuseIntensity[1] = { m_PointLightContainer[i].diffuseIntensity };
         
         float pColor[3] = { m_PointLightContainer[i].color.x, m_PointLightContainer[i].color.y, m_PointLightContainer[i].color.z };
@@ -261,7 +261,7 @@ void LBuffer::CalcDirectLighting(Camera3D& cameraIn)
     {
         float sConstant[1] = { m_SpotLightContainer[i].constantAtt };
         float sLinear[1] = { m_SpotLightContainer[i].linearAtt };
-        float sExponential[1] = { m_SpotLightContainer[i].exponentioalAtt };
+        float sExponential[1] = { m_SpotLightContainer[i].exponentialAtt };
         float sDiffuseIntensity[1] = { m_SpotLightContainer[i].diffuseIntensity };
         float sCutOffAngle[1] = { m_SpotLightContainer[i].innerCutOffAngle };
         float sOuterCutOffAngle[1] = { cosf(m_SpotLightContainer[i].outerCutOffAngle) }; //only the cos is used so its precalced

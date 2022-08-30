@@ -69,7 +69,8 @@ void GraphicsHandler3D::GeometryPass()
 
 	BeginMode3D(*m_SceneCamera.GetCameraPTR());
 
-	m_ObjectHandler3D_ptr->Render(true, false);
+	// render non fur non transparent objects
+	m_ObjectHandler3D_ptr->Render(false, false);
 
 	EndMode3D();
 

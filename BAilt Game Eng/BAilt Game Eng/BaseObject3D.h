@@ -18,14 +18,17 @@ public:
 	void UpdateTransform() { UpdateTransformation(&m_Transform); }
 	Matrix* GetTransform() { return &m_Transform; }
 
-	bool GetStaticStatus() { return m_isStatic; }
-	void SetStaticStatus(bool& staticStausIn) { m_isStatic = staticStausIn; }
+	bool GetFurStatus() { return m_isFur; }
+	void SetFurStatus(bool& staticStausIn) { m_isFur = staticStausIn; }
 
 	bool GetTransparencyStatus() { return m_hasTransparency; }
 	void SetTransparencyStatus(bool& transparencyStatusIn) { m_hasTransparency = transparencyStatusIn; }
 
 	bool GetUpdateStatus() { return m_update; }
 	void SetUpdateStatus(bool& updateStausIn) { m_update = updateStausIn; }
+
+	bool GetShadowStatus() { return m_castsShadows; }
+	void SetShadowStatus(bool& updateStausIn) { m_castsShadows = updateStausIn; }
 
 	unsigned int GetIndex() { return m_objectIndex; }
 
@@ -44,9 +47,10 @@ private:
 	std::vector<int> m_materialIndicies;
 
 
-	bool m_isStatic = true;
+	bool m_isFur = false;
 	bool m_hasTransparency = false;
-	bool m_update = true;
+	bool m_update = false;
+	bool m_castsShadows = true;
 
 	
 	Matrix m_Transform;

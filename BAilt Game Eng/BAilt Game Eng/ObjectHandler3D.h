@@ -17,7 +17,7 @@ namespace
 		ObjectHandler3D();
 
 		void UpdateAllTransforms();
-		void Render(bool isStatic, bool hasTransparency);
+		void Render(bool isFur, bool hasTransparency);
 		void Update();
 
 		unsigned int CreateObject(std::string& fileName);
@@ -63,11 +63,11 @@ void ObjectHandler3D::UpdateAllTransforms()
 }
 
 //Function to draw all objects in cointainer. Primarily for use in GraphicsHandler3D
-void ObjectHandler3D::Render(bool isStatic, bool hasTransparency)
+void ObjectHandler3D::Render(bool isFur, bool hasTransparency)
 {
 	for (unsigned int i = 0; i < m_ObjContainer3d.size(); i++)
 	{
-		if (isStatic == m_ObjContainer3d[i]->GetStaticStatus() || hasTransparency == m_ObjContainer3d[i]->GetTransparencyStatus())
+		if (isFur == m_ObjContainer3d[i]->GetFurStatus() || hasTransparency == m_ObjContainer3d[i]->GetTransparencyStatus())
 		{
 			DrawObject3D(i);
 		}

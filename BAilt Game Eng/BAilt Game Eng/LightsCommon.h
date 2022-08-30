@@ -12,6 +12,8 @@ struct BaseLight
 	Vector3 color = { 1.0f, 1.0f, 1.0f };
 	float ambientIntensity = 0.0;
 	float diffuseIntensity = 1.0f;
+	unsigned int shadowMapWidth = 128;
+	unsigned int shadowMapHeight = 128;
 };
 
 struct DirectionalLight : BaseLight
@@ -24,7 +26,7 @@ struct PointLight : BaseLight
 	Vector3 position = { 0.0f, 0.0f, 0.0f };
 	float constantAtt = 0.5f;
 	float linearAtt = 0.0f;
-	float exponentioalAtt = 0.05f;
+	float exponentialAtt = 0.05f;
 };
 
 struct SpotLight : PointLight

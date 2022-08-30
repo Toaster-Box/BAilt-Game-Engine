@@ -82,6 +82,7 @@ void Transformation::LookAt(Vector3 targetDir, Vector3 desiredUp)
 	m_forward = Vector3RotateByQuaternion(worldForward, m_orientation);
 	m_up = Vector3RotateByQuaternion(worldUp, m_orientation);
 	m_right = Vector3RotateByQuaternion(worldRight, m_orientation);
+
 }
 
 
